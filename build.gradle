@@ -1,0 +1,15 @@
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+
+dependencies {
+    compile 'org.testng:testng:6.13.1'
+    compile 'org.seleniumhq.selenium:selenium-java:3.8.1'
+    compile 'org.hamcrest:java-hamcrest:2.0.0.0'
+    compile 'com.dslplatform:dsl-json-java8:1.9.3'
+    compile 'com.github.anandvarkeyphilips:json-java-ordered:20180813'
+    compile 'com.codeborne:selenide:5.2.8'
+}
