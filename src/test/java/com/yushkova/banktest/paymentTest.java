@@ -61,6 +61,15 @@ public class paymentTest {
     String phone = "9270130570";
 
     //payment
+    payment(mainUrl, partOfPaymentUrl, mdOrder, cardNumber, extYear, expMonth, owner, cvv2, email, phone);
+
+    //confirm payment
+    wd.findElement(By.cssSelector("[name=password]")).click();
+    wd.findElement(By.name("password")).sendKeys(codeFromSms);
+    wd.findElement(By.cssSelector("[type=submit]" )).click();
+  }
+
+  private void payment(String mainUrl, String partOfPaymentUrl, String mdOrder, String cardNumber, String extYear, String expMonth, String owner, String cvv2, String email, String phone) {
     wd.get(mainUrl + partOfPaymentUrl + "mdOrder=" + mdOrder);
     wd.findElement(By.id("pan_visible")).click();
     wd.findElement(By.id("pan_visible")).sendKeys(cardNumber);
@@ -77,11 +86,6 @@ public class paymentTest {
     wd.findElement(By.id("phoneInput")).click();
     wd.findElement(By.id("phoneInput")).sendKeys(phone);
     wd.findElement(By.id("buttonPayment")).click();
-
-    //confirm payment
-    wd.findElement(By.cssSelector("[name=password]")).click();
-    wd.findElement(By.name("password")).sendKeys(codeFromSms);
-    wd.findElement(By.cssSelector("[type=submit]" )).click();
   }
 
   private static String request(String url) throws Exception {
