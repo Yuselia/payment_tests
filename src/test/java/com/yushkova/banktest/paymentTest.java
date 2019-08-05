@@ -78,26 +78,22 @@ public class paymentTest {
 
   private void payment(String paymentURL, Card card, String email, String phone) {
     wd.get(paymentURL);
-    wd.findElement(By.id("pan_visible")).click();
-    wd.findElement(By.id("pan_visible")).clear();
-    wd.findElement(By.id("pan_visible")).sendKeys(card.getCardNumber());
+    type(By.id("pan_visible"), card.getCardNumber());
     wd.findElement(By.id("month-button")).click();
     wd.findElement(By.xpath("//li[text() = '" + card.getExpMonth() + "']")).click();
     wd.findElement(By.id("year-button")).click();
     wd.findElement(By.xpath("//li[text() = '" + card.getExtYear() + "']")).click();
-    wd.findElement(By.id("iTEXT")).click();
-    wd.findElement(By.id("iTEXT")).clear();
-    wd.findElement(By.id("iTEXT")).sendKeys(card.getOwner());
-    wd.findElement(By.id("iCVC")).click();
-    wd.findElement(By.id("iCVC")).clear();
-    wd.findElement(By.id("iCVC")).sendKeys(card.getCvv2());
-    wd.findElement(By.id("email")).click();
-    wd.findElement(By.id("email")).clear();
-    wd.findElement(By.id("email")).sendKeys(email);
-    wd.findElement(By.id("phoneInput")).click();
-    wd.findElement(By.id("phoneInput")).clear();
-    wd.findElement(By.id("phoneInput")).sendKeys(phone);
+    type(By.id("iTEXT"), card.getOwner());
+    type(By.id("iCVC"), card.getCvv2());
+    type(By.id("email"), email);
+    type(By.id("phoneInput"), phone);
     wd.findElement(By.id("buttonPayment")).click();
+  }
+
+  private void type(By locator, String text) {
+    wd.findElement(locator).click();
+    wd.findElement(locator).clear();
+    wd.findElement(locator).sendKeys(text);
   }
 
   private static String request(String url) throws Exception {
