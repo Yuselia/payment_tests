@@ -19,6 +19,21 @@ import static org.testng.AssertJUnit.assertTrue;
 public class paymentTest {
   ChromeDriver wd;
 
+  //urls
+  String mainUrl = "https://web.rbsdev.com/alfapayment-release/";
+  String partOfRegisterUrl = "rest/register.do?";
+  String partOfPaymentUrl = "merchants/rbs/payment_ru.html?";
+
+  //test values for register.do
+  Order order = new Order("022018", "http://ya.ru/", "task-yushkova-api", "020819", "7623574274527");
+
+  //test values for payment
+  Card card = new Card("4111111111111111", "2019", "Декабрь", "Test", "123", "12345678");
+  String email = "test@test.ru";
+  String phone = "9270130570";
+
+  String[] namesOfRegisterParameters = {"orderId", "formUrl"};
+
   @BeforeMethod
   public void setUp() throws Exception {
     wd = new ChromeDriver();
@@ -27,25 +42,7 @@ public class paymentTest {
 
   @Test
   public void registerAndPayment() throws Exception {
-    //urls
-    String mainUrl = "https://web.rbsdev.com/alfapayment-release/";
-    String partOfRegisterUrl = "rest/register.do?";
-    String partOfPaymentUrl = "merchants/rbs/payment_ru.html?";
-
-    //test values for register.do
-    Order order = new Order("022018", "http://ya.ru/", "task-yushkova-api", "020819", "7623574274527");
-
-    //test values for payment
-    Card card = new Card("4111111111111111", "2019", "Декабрь", "Test", "123", "12345678");
-    String email = "test@test.ru";
-    String phone = "9270130570";
-
-    //get register request
-    String registerRequest = getRegisterRequestUrl(mainUrl, partOfRegisterUrl, order);
-
-    //get register response
-    String response = request(registerRequest);
-    String[] namesOfRegisterParameters = {"orderId", "formUrl"};
+    String response = register();
     String[] valuesOfRegisterParameters = getParametersFromResponse(response, namesOfRegisterParameters);
 
     String mdOrder = valuesOfRegisterParameters[0];
@@ -57,6 +54,14 @@ public class paymentTest {
     //payment
     payment(paymentUrl, card, email, phone);
     confirmPayment(card.getCodeFromSms());
+  }
+
+  private String register() throws Exception {
+    //get register request
+    String registerRequest = getRegisterRequestUrl(mainUrl, partOfRegisterUrl, order);
+
+    //get register response
+    return request(registerRequest);
   }
 
   public String[] getParametersFromResponse(String response, String[] namesOfParameters) {
@@ -125,14 +130,6 @@ public class paymentTest {
     in.close();
     return response.toString();
   }
-
-  /*private static String getOrderId(String response) {
-    JSONObject myResponse = new JSONObject(response.toString());
-    String orderId = myResponse.getString("orderId");
-    String formUrl = myResponse.getString("formUrl");
-    assertTrue(formUrl.contains(orderId));
-    return orderId;
-  }*/
 
   @AfterMethod
   public void tearDown() {
