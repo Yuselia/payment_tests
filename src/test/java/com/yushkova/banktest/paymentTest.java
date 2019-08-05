@@ -45,14 +45,27 @@ public class paymentTest {
 
     //get register response
     String response = request(registerRequest);
-    String mdOrder = getOrderId(response);
+    String[] namesOfRegisterParameters = {"orderId", "formUrl"};
+    String[] valuesOfRegisterParameters = getParametersFromResponse(response, namesOfRegisterParameters);
+
+    String mdOrder = valuesOfRegisterParameters[0];
 
     //get payment URL
     String paymentUrl = getPaymentUrl(mainUrl, partOfPaymentUrl, mdOrder);
+    assertEquals(paymentUrl, valuesOfRegisterParameters[1]);
 
     //payment
     payment(paymentUrl, card, email, phone);
     confirmPayment(card.getCodeFromSms());
+  }
+
+  public String[] getParametersFromResponse(String response, String[] namesOfParameters) {
+    JSONObject myResponse = new JSONObject(response.toString());
+    String[] valuesOfParameters = new String[namesOfParameters.length];
+    for (int i = 0; i < namesOfParameters.length; i++) {
+      valuesOfParameters[i] = myResponse.getString(namesOfParameters[i]);
+    }
+    return valuesOfParameters;
   }
 
   private String getRegisterRequestUrl(String mainUrl, String partOfRegisterUrl, Order order) {
@@ -113,13 +126,13 @@ public class paymentTest {
     return response.toString();
   }
 
-  private static String getOrderId(String response) {
+  /*private static String getOrderId(String response) {
     JSONObject myResponse = new JSONObject(response.toString());
     String orderId = myResponse.getString("orderId");
     String formUrl = myResponse.getString("formUrl");
     assertTrue(formUrl.contains(orderId));
     return orderId;
-  }
+  }*/
 
   @AfterMethod
   public void tearDown() {
