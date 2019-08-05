@@ -26,64 +26,76 @@ public class paymentTest {
   }
 
   @Test
-  public void paymentTest() throws Exception {
+  public void registerAndPayment() throws Exception {
     //urls
     String mainUrl = "https://web.rbsdev.com/alfapayment-release/";
     String partOfRegisterUrl = "rest/register.do?";
     String partOfPaymentUrl = "merchants/rbs/payment_ru.html?";
 
     //test values for register.do
-    String orderAmount = "022018";
-    String returnUrl = "http://ya.ru/";
-    String userName = "task-yushkova-api";
-    String password = "020819";
-    String orderNumber = "7623574274527";
+    Order order = new Order("022018", "http://ya.ru/", "task-yushkova-api", "020819", "7623574274527");
+
+    //test values for payment
+    Card card = new Card("4111111111111111", "2019", "Декабрь", "Test", "123", "12345678");
+    String email = "test@test.ru";
+    String phone = "9270130570";
 
     //get register request
-    String registerRequest = mainUrl + partOfRegisterUrl
-            + "userName=" + userName + "&password=" + password
-            + "&orderId=&amount=" + orderAmount
-            + "&orderNumber=" + orderNumber
-            + "&returnUrl=" + returnUrl;
+    String registerRequest = getRegisterRequestUrl(mainUrl, partOfRegisterUrl, order);
 
     //get register response
     String response = request(registerRequest);
     String mdOrder = getOrderId(response);
 
-    //test values for payment
-    String cardNumber = "4111111111111111";
-    String extYear = "2019";
-    String expMonth = "Декабрь";
-    String owner = "Test";
-    String cvv2 = "123";
-    String codeFromSms = "12345678";
-    String email = "test@test.ru";
-    String phone = "9270130570";
+    //get payment URL
+    String paymentUrl = getPaymentUrl(mainUrl, partOfPaymentUrl, mdOrder);
 
     //payment
-    payment(mainUrl, partOfPaymentUrl, mdOrder, cardNumber, extYear, expMonth, owner, cvv2, email, phone);
+    payment(paymentUrl, card, email, phone);
+    confirmPayment(card.getCodeFromSms());
+  }
 
+  private String getRegisterRequestUrl(String mainUrl, String partOfRegisterUrl, Order order) {
+    //get register request
+    return mainUrl + partOfRegisterUrl
+            + "userName=" + order.getUserName() + "&password=" + order.getPassword()
+            + "&orderId=&amount=" + order.getOrderAmount()
+            + "&orderNumber=" + order.getOrderNumber()
+            + "&returnUrl=" + order.getReturnUrl();
+  }
+
+  private String getPaymentUrl(String mainUrl, String partOfPaymentUrl, String mdOrder) {
+    //get payment URL
+    return mainUrl + partOfPaymentUrl + "mdOrder=" + mdOrder;
+  }
+
+  private void confirmPayment(String codeFromSms) {
     //confirm payment
     wd.findElement(By.cssSelector("[name=password]")).click();
     wd.findElement(By.name("password")).sendKeys(codeFromSms);
     wd.findElement(By.cssSelector("[type=submit]" )).click();
   }
 
-  private void payment(String mainUrl, String partOfPaymentUrl, String mdOrder, String cardNumber, String extYear, String expMonth, String owner, String cvv2, String email, String phone) {
-    wd.get(mainUrl + partOfPaymentUrl + "mdOrder=" + mdOrder);
+  private void payment(String paymentURL, Card card, String email, String phone) {
+    wd.get(paymentURL);
     wd.findElement(By.id("pan_visible")).click();
-    wd.findElement(By.id("pan_visible")).sendKeys(cardNumber);
+    wd.findElement(By.id("pan_visible")).clear();
+    wd.findElement(By.id("pan_visible")).sendKeys(card.getCardNumber());
     wd.findElement(By.id("month-button")).click();
-    wd.findElement(By.xpath("//li[text() = '" + expMonth + "']")).click();
+    wd.findElement(By.xpath("//li[text() = '" + card.getExpMonth() + "']")).click();
     wd.findElement(By.id("year-button")).click();
-    wd.findElement(By.xpath("//li[text() = '" + extYear + "']")).click();
+    wd.findElement(By.xpath("//li[text() = '" + card.getExtYear() + "']")).click();
     wd.findElement(By.id("iTEXT")).click();
-    wd.findElement(By.id("iTEXT")).sendKeys(owner);
+    wd.findElement(By.id("iTEXT")).clear();
+    wd.findElement(By.id("iTEXT")).sendKeys(card.getOwner());
     wd.findElement(By.id("iCVC")).click();
-    wd.findElement(By.id("iCVC")).sendKeys(cvv2);
+    wd.findElement(By.id("iCVC")).clear();
+    wd.findElement(By.id("iCVC")).sendKeys(card.getCvv2());
     wd.findElement(By.id("email")).click();
+    wd.findElement(By.id("email")).clear();
     wd.findElement(By.id("email")).sendKeys(email);
     wd.findElement(By.id("phoneInput")).click();
+    wd.findElement(By.id("phoneInput")).clear();
     wd.findElement(By.id("phoneInput")).sendKeys(phone);
     wd.findElement(By.id("buttonPayment")).click();
   }
