@@ -15,6 +15,5 @@ public class paymentTest extends TestBase {
     app.payment(paymentUrl, app.card, app.email, app.phone);
     app.confirmPayment(app.card.getCodeFromSms());
     String orderStatusResponse = app.getOrderStatus();
-    int i = 0;
   }
 }
