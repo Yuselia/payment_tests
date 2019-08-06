@@ -7,12 +7,14 @@ public class paymentTest extends TestBase {
   @Test
   public void registerAndPayment() throws Exception {
     //register
-    String response = app.register();
-    String[] valuesOfRegisterParameters = app.getParametersFromResponse(response, app.namesOfRegisterParameters);
+    String registerResponse = app.register();
+    String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, app.namesOfRegisterParameters);
 
     //payment
     String paymentUrl = app.getPaymentUrl(valuesOfRegisterParameters);
     app.payment(paymentUrl, app.card, app.email, app.phone);
     app.confirmPayment(app.card.getCodeFromSms());
+    String orderStatusResponse = app.getOrderStatus();
+    int i = 0;
   }
 }

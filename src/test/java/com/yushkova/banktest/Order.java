@@ -6,13 +6,15 @@ public class Order {
   private final String userName;
   private final String password;
   private final String orderNumber;
+  private String orderId;
 
-  public Order(String orderAmount, String returnUrl, String userName, String password, String orderNumber) {
+  public Order(String orderAmount, String returnUrl, String userName, String password, String orderNumber, String orderId) {
     this.orderAmount = orderAmount;
     this.returnUrl = returnUrl;
     this.userName = userName;
     this.password = password;
     this.orderNumber = orderNumber;
+    this.orderId = orderId;
   }
 
   public String getOrderAmount() {
@@ -33,5 +35,13 @@ public class Order {
 
   public String getOrderNumber() {
     return orderNumber;
+  }
+
+  public String getOrderId() {
+    return orderId;
+  }
+
+  public void setOrderId(String orderId) {
+    this.orderId = orderId;
   }
 }
