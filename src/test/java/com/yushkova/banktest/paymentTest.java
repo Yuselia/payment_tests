@@ -3,14 +3,13 @@ package com.yushkova.banktest;
 import org.testng.annotations.Test;
 
 import static com.yushkova.banktest.ApplicationManager.sendRequest;
-import static org.testng.AssertJUnit.assertEquals;
 
 public class paymentTest extends TestBase {
 
   //test values for register.do
   Order order = new Order("022018", Integer.parseInt("022018"), "http://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "");
   //test values for payment
-  Card card = new Card("4111111111111111", "2019", "Декабрь", "Test", "123", "12345678");
+  Card card = new Card("4111 1111 1111 1111", "2019", "Декабрь", "Test", "123", "12345678");
   String email = "test@test.ru";
   String phone = "9270130570";
 
@@ -25,9 +24,8 @@ public class paymentTest extends TestBase {
     //payment
     String paymentUrl = app.getPaymentUrl(valuesOfRegisterParameters);
     app.payment(paymentUrl, card, email, phone);
-    app.confirmPayment(card.getCodeFromSms());
 
-    //assertorderStatus
+    //assert Order Status
     String orderStatusResponse = app.getOrderStatus(order);
     String[] valuesOfOrderStatusParameters = app.getParametersFromResponse(orderStatusResponse, app.namesOfOrderStatusParameters);
     String[] valuesOfPaymentAmountInfo = app.getParametersFromResponse(valuesOfOrderStatusParameters[4], app.namesOfPaymentAmountInfo);
