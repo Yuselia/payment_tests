@@ -24,10 +24,14 @@ public class ApplicationManager {
   private String partOfRegisterUrl = "rest/register.do?";
   private String partOfPaymentUrl = "merchants/rbs/payment_ru.html?";
   private String partOfOrderStatusUrl = "rest/getOrderStatusExtended.do?";
+  private String partOfReverseUrl = "rest/reverse.do?language=ru";
+  private String partOfRefundUrl = "rest/refund.do? ";
 
   String[] namesOfRegisterParameters = {"orderId", "formUrl"};
   String[] namesOfOrderStatusParameters = {"errorCode", "errorMessage", "orderStatus", "amount", "paymentAmountInfo"};
   String[] namesOfPaymentAmountInfo = {"paymentState", "approvedAmount", "depositedAmount", "refundedAmount"};
+  String[] namesOfReverseParameters = {"orderId", "formUrl"};
+  String[] namesOfRefundParameters = {"orderId", "formUrl"};
 
   public void init() {
     wd = new ChromeDriver();
@@ -83,6 +87,22 @@ public class ApplicationManager {
             + "&orderId=" + order.getOrderId()
             + "&language=ru"
             + "merchantOrderNumber=" + order.getOrderNumber();
+  }
+
+  public String getReverseUrl(Order order) {
+    return mainUrl + partOfReverseUrl
+            + "&orderId=" + order.getOrderId()
+            + "&password=" + order.getPassword()
+            + "userName=" + order.getUserName();
+  }
+
+  public String getRefundUrl(Order order, String amount) {
+    return mainUrl + partOfRefundUrl
+            + "amount=" + amount
+            + "&currency=810&language=ru"
+            + "&orderId=" + order.getOrderId()
+            + "&password=" + order.getPassword()
+            + "userName=" + order.getUserName();
   }
 
   public void payment(String paymentURL, Card card, String email, String phone) {
@@ -171,5 +191,12 @@ public class ApplicationManager {
       wd = null;
     }
     else return;
+  }
+
+  public void assertReverseStatus(Order order, String[] valuesOfReverseParameters) {
+  }
+
+  public void assertRefundStatus(Order order, String[] valuesOfRefundParameters) {
+
   }
 }
