@@ -1,4 +1,4 @@
-package com.yushkova.banktest;
+package com.yushkova.banktest.models;
 
 public class Order {
   private final String orderAmount;
