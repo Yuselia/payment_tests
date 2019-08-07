@@ -1,5 +1,6 @@
 package com.yushkova.banktest;
 
+import com.sun.tools.javac.util.Convert;
 import org.json.JSONObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -18,16 +19,13 @@ public class ApplicationManager {
   String mainUrl = "https://web.rbsdev.com/alfapayment-release/";
   String partOfRegisterUrl = "rest/register.do?";
   String partOfPaymentUrl = "merchants/rbs/payment_ru.html?";
-  String partOfOrderStatusUrl = "/rest/getOrderStatusExtended.do?";
-  //test values for register.do
-  Order order = new Order("022018", "http://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "");
-  //test values for payment
-  Card card = new Card("4111111111111111", "2019", "Декабрь", "Test", "123", "12345678");
-  String email = "test@test.ru";
-  String phone = "9270130570";
-  String[] namesOfRegisterParameters = {"orderId", "formUrl"};
+  String partOfOrderStatusUrl = "rest/getOrderStatusExtended.do?";
 
-  private static String sendRequest(String url) throws Exception {
+  String[] namesOfRegisterParameters = {"orderId", "formUrl"};
+  String[] namesOfOrderStatusParameters = {"errorCode", "errorMessage", "orderStatus", "amount", "paymentAmountInfo"};
+  String[] namesOfPaymentAmountInfo = {"paymentState", "approvedAmount", "depositedAmount", "refundedAmount"};
+
+  public static String sendRequest(String url) throws Exception {
     URL obj = new URL(url);
     HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
     con.setRequestMethod("GET");
@@ -53,7 +51,7 @@ public class ApplicationManager {
     JSONObject myResponse = new JSONObject(response.toString());
     String[] valuesOfParameters = new String[namesOfParameters.length];
     for (int i = 0; i < namesOfParameters.length; i++) {
-      valuesOfParameters[i] = myResponse.getString(namesOfParameters[i]);
+      valuesOfParameters[i] = (myResponse.get(namesOfParameters[i])).toString();
     }
     return valuesOfParameters;
   }
@@ -94,25 +92,24 @@ public class ApplicationManager {
     //get payment URL
     String paymentUrl = getPaymentUrl(valuesOfRegisterParameters[0]);
     assertEquals(paymentUrl, valuesOfRegisterParameters[1]);
-    order.setOrderId(valuesOfRegisterParameters[0]);
     return paymentUrl;
   }
 
-  public String register() throws Exception {
+  /*public String register() throws Exception {
     //get register sendRequest
-    String registerRequest = getRegisterRequestUrl(order);
+    //String registerRequest = getRegisterRequestUrl(order);
 
     //get register response
     return sendRequest(registerRequest);
-  }
+  }*/
 
-  public String getOrderStatus() throws Exception{
+  public String getOrderStatus(Order order) throws Exception{
     String getOrderStatusRequest = getOrderStatusRequestUrl(order);
-    return getOrderStatusRequest;
-   // return sendRequest("https://web.rbsdev.com/alfapayment-release/rest/getOrderStatusExtended.do?userName=task-yushkova-api&password=020819&orderId=f64ce78b-9b94-4bae-af36-bd4221b16a5e&language=ru&merchantOrderNumber=7623574274527");
+    //return getOrderStatusRequest;
+   return sendRequest(getOrderStatusRequest);
   }
 
-  private String getRegisterRequestUrl(Order order) {
+  public String getRegisterRequestUrl(Order order) {
     //get register sendRequest
     return mainUrl + partOfRegisterUrl
             + "userName=" + order.getUserName() + "&password=" + order.getPassword()
@@ -132,5 +129,19 @@ public class ApplicationManager {
 
   public void stop() {
     wd.quit();
+  }
+
+  public void assertOrderStatus(Order order, String[] valuesOfOrderStatusParameters, String[] valuesOfPaymentAmountInfo, String assertPaymentState) {
+    assertEquals("0", valuesOfOrderStatusParameters[0]);
+    assertEquals("Успешно", valuesOfOrderStatusParameters[1]);
+    assertEquals(String.valueOf(order.getOrderAmountInt()), valuesOfOrderStatusParameters[3]);
+    assertEquals(assertPaymentState, valuesOfPaymentAmountInfo[0]);
+    if(assertPaymentState == "DEPOSITED") {
+      assertEquals("2", valuesOfOrderStatusParameters[2]);
+      assertEquals(String.valueOf(order.getOrderAmountInt()), valuesOfPaymentAmountInfo[1]);
+      assertEquals(String.valueOf(order.getOrderAmountInt()), valuesOfPaymentAmountInfo[2]);
+      assertEquals("0", valuesOfPaymentAmountInfo[3]);
+    }
+
   }
 }
