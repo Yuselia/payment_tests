@@ -10,7 +10,7 @@ import static com.yushkova.banktest.ApplicationManager.sendRequest;
 public class ReversedTests extends TestBase {
 
   //test values for register.do
-  Order order = new Order("022018", Integer.parseInt("022018"), "http://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "");
+  Order order = new Order("022018", Integer.parseInt("022018"), "https://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "");
   //there are correct card values
   Card card = new Card("5555 5555 5555 5599", "2019", "Декабрь", "Test", "123", "");
   String email = "";
@@ -26,7 +26,7 @@ public class ReversedTests extends TestBase {
 
     //payment
     String paymentUrl = app.getPaymentUrl(valuesOfRegisterParameters);
-    app.payment(paymentUrl, card, email, phone);
+    app.payment(paymentUrl, card, email, phone, order);
 
     //assert Order Status
     String orderStatusUrlRequest = app.getOrderStatusRequestUrl(order);

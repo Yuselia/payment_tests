@@ -13,6 +13,9 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 
+import static org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated;
+import static org.openqa.selenium.support.ui.ExpectedConditions.titleIs;
+import static org.openqa.selenium.support.ui.ExpectedConditions.urlContains;
 import static org.testng.AssertJUnit.assertEquals;
 
 public class ApplicationManager {
@@ -35,7 +38,7 @@ public class ApplicationManager {
 
   public void init() {
     wd = new ChromeDriver();
-    wait = new WebDriverWait(wd, 100000);
+    wait = new WebDriverWait(wd, 100);
   }
 
   public static String sendRequest(String url) throws Exception {
@@ -105,25 +108,54 @@ public class ApplicationManager {
             + "userName=" + order.getUserName();
   }
 
-  public void payment(String paymentURL, Card card, String email, String phone) {
+  public void payment(String paymentURL, Card card, String email, String phone, Order order) {
     openPage(paymentURL);
-    //wd.get(paymentURL);
+    wait.until(titleIs("Альфа-Банк"));
+    wait.until(presenceOfElementLocated(By.id("pan_visible")));
     type(By.id("pan_visible"), card.getCardNumber());
     wd.findElement(By.id("month-button")).click();
+    wait.until(presenceOfElementLocated(By.xpath("//li[text() = '" + card.getExpMonth() + "']")));
     wd.findElement(By.xpath("//li[text() = '" + card.getExpMonth() + "']")).click();
     wd.findElement(By.id("year-button")).click();
+    //wait.until(presenceOfElementLocated(By.xpath("//li[text() = '" + card.getExtYear() + "']")));
     wd.findElement(By.xpath("//li[text() = '" + card.getExtYear() + "']")).click();
     type(By.id("iTEXT"), card.getOwner());
     type(By.id("iCVC"), card.getCvv2());
     type(By.id("email"), email);
     type(By.id("phoneInput"), phone);
     wd.findElement(By.id("buttonPayment")).click();
-    if (isElementPresent(wd, By.cssSelector("form[name=form1]"))) {
+    if (card.getCodeFromSms() != "") {
+      setConfirmationCode(card.getCodeFromSms());
+    }
+
+  }
+
+  private void setConfirmationCode(String code) {
+    wait.until(titleIs("Payment confirmation"));
+    type(By.name("password"), code);
+    wd.findElement(By.cssSelector("[type=submit]")).click();
+  }
+
+  /*private void afterPayment(Card card, Order order) {
+    if (!paymentShouldBePassed) {
+      if ((isElementPresent(wd, By.xpath("//*[text() = 'Срок действия карты указан неверно']"))) ||
+              (isElementPresent(wd, By.xpath("//*[text() = 'Владелец карты указан неверно']")))) {
+        return false;
+      }
+    }
+
+    if (card.getCodeFromSms() != "") {
+      wait.until(titleIs("Payment confirmation"));
       type(By.name("password"), card.getCodeFromSms());
       wd.findElement(By.cssSelector("[type=submit]")).click();
     }
-    else return;
-  }
+
+    if (!paymentShouldBePassed) {
+      wait.until(urlContains(order.getReturnUrl()));
+    }
+    //if (isElementPresent(wd, By.cssSelector("form[name=form1]")))
+    wait.until(urlContains(order.getReturnUrl()));
+  } */
 
   public void openPage(String URL) {
     wd.get(URL);
@@ -193,5 +225,9 @@ public class ApplicationManager {
 
   public void assertRefundStatus(Order order, String[] valuesOfRefundParameters) {
 
+  }
+
+  public void waitReturnUrl(Order order) {
+    wait.until(urlContains(order.getReturnUrl()));
   }
 }

@@ -40,7 +40,7 @@ public class DeclineTests extends TestBase {
   @Test
   public void declineStateAfterOneTryAndTimeOut() throws Exception {
     //test values for register.do
-    Order order2 = new Order("022018", Integer.parseInt("022018"), "http://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "");
+    Order order2 = new Order("022018", Integer.parseInt("022018"), "https://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "");
     //this is card with wrong cvv2
     Card card2 = new Card("4111 1111 1111 1111", "2019", "Декабрь", "Test", "124", "12345678");
     String email = "test@test.ru";
@@ -54,7 +54,7 @@ public class DeclineTests extends TestBase {
 
     //payment
     String paymentUrl = app.getPaymentUrl(valuesOfRegisterParameters);
-    app.payment(paymentUrl, card2, email, phone);
+    app.payment(paymentUrl, card2, email, phone, order2);
     wait(1200000);
 
     //assert Order Status
