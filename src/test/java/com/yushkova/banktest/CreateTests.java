@@ -40,7 +40,7 @@ public class CreateTests extends TestBase {
   public void createStateAfterOnePaymentTry() throws Exception {
     //test values for register.do
     Order order2 = new Order("022018", Integer.parseInt("022018"), "https://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "");
-    //this is card with wrong cvv2
+    //Here should be not valid values of card
     Card card2 = new Card("4111 1111 1111 1111", "2019", "Декабрь", "Test", "124", "12345678");
     String email = "test@test.ru";
     String phone = "9270130570";
