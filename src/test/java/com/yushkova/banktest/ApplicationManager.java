@@ -38,7 +38,7 @@ public class ApplicationManager {
 
   public void init() {
     wd = new ChromeDriver();
-    wait = new WebDriverWait(wd, 70);
+    wait = new WebDriverWait(wd, 80);
   }
 
   public static String sendRequest(String url) throws Exception {
@@ -74,6 +74,16 @@ public class ApplicationManager {
             + "&orderId=&amount=" + order.getOrderAmount()
             + "&orderNumber=" + order.getOrderNumber()
             + "&returnUrl=" + order.getReturnUrl();
+  }
+
+  public String getRegisterRequestUrl(Order order, int sessionTimeoutSecs) {
+    //get register sendRequest
+    return mainUrl + partOfRegisterUrl
+            + "userName=" + order.getUserName() + "&password=" + order.getPassword()
+            + "&orderId=&amount=" + order.getOrderAmount()
+            + "&orderNumber=" + order.getOrderNumber()
+            + "&returnUrl=" + order.getReturnUrl()
+            + "&sessionTimeoutSecs=" + String.valueOf(sessionTimeoutSecs);
   }
 
   public String getPaymentUrl(String[] valuesOfRegisterParameters) {
@@ -121,8 +131,13 @@ public class ApplicationManager {
     wd.findElement(By.xpath("//li[text() = '" + card.getExtYear() + "']")).click();
     type(By.id("iTEXT"), card.getOwner());
     type(By.id("iCVC"), card.getCvv2());
-    type(By.id("email"), email);
-    type(By.id("phoneInput"), phone);
+    if(wd.findElement(By.id("email")).isDisplayed()) {
+      type(By.id("email"), email);
+      type(By.id("phoneInput"), phone);
+    }
+    /*if(wd.findElement(By.id("phoneInput")).isDisplayed()) {
+      type(By.id("phoneInput"), phone);
+    }*/
     wd.findElement(By.id("buttonPayment")).click();
   }
 
@@ -143,15 +158,24 @@ public class ApplicationManager {
       setConfirmationCode(card.getCodeFromSms());
     }
     if (!paymentShouldBePassed) {
-      wait.until(titleIs("Альфа-Банк"));
-      wd.findElement(By.xpath("//*[text() = 'Проверьте правильность ввода карточных данных"));
+      if (isElementPresent(
+              wd, By.xpath("//*[text() = 'Введен неправильный или просроченный код. Для получения нового кода, пожалуйста, нажмите кнопку «Отправить код еще раз».']"))) {
+        return;
+      }
+     // wait.until(titleIs("Альфа-Банк"));
+      //wd.findElement(By.xpath("//p[text() = 'Проверьте правильность ввода карточных данных. Если данная ошибка возникла повторно, обратитесь в Ваш банк для разъяснения причин. Телефон банка должен быть указан на обратной стороне карты.']"));
+      //wd.findElement(By.xpath("//p[text() = 'Ошибка проведения платежа. Попробуйте позднее. Если данная ошибка возникла повторно, обратитесь в Ваш банк для разъяснения причин. Телефон банка должен быть указан на обратной стороне карты.']"));
       return;
     }
-    wait.until(urlContains(order.getReturnUrl()));
+    //waitReturnUrl(order);
   }
 
   public void openPage(String URL) {
     wd.get(URL);
+  }
+
+  public void waitReturnUrl(Order order) {
+    wait.until(urlContains(order.getReturnUrl()));
   }
 
   public void assertOrderStatus(Order order, String[] valuesOfOrderStatusParameters, String[] valuesOfPaymentAmountInfo, String assertPaymentState) {
@@ -219,5 +243,4 @@ public class ApplicationManager {
   public void assertRefundStatus(Order order, String[] valuesOfRefundParameters) {
 
   }
-
 }
