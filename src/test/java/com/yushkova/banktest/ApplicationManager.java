@@ -35,7 +35,7 @@ public class ApplicationManager {
 
   public void init() {
     wd = new ChromeDriver();
-    //wait = new WebDriverWait(wd, 100000);
+    wait = new WebDriverWait(wd, 100000);
   }
 
   public static String sendRequest(String url) throws Exception {
@@ -80,7 +80,7 @@ public class ApplicationManager {
     return paymentUrl;
   }
 
-  private String getOrderStatusRequestUrl(Order order) {
+  public String getOrderStatusRequestUrl(Order order) {
     //get register sendRequest
     return mainUrl + partOfOrderStatusUrl
             + "userName=" + order.getUserName() + "&password=" + order.getPassword()
@@ -127,11 +127,6 @@ public class ApplicationManager {
 
   public void openPage(String URL) {
     wd.get(URL);
-  }
-
-  public String getOrderStatus(Order order) throws Exception{
-    String getOrderStatusRequest = getOrderStatusRequestUrl(order);
-    return sendRequest(getOrderStatusRequest);
   }
 
   public void assertOrderStatus(Order order, String[] valuesOfOrderStatusParameters, String[] valuesOfPaymentAmountInfo, String assertPaymentState) {

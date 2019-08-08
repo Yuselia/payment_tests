@@ -29,7 +29,8 @@ public class ReversedTests extends TestBase {
     app.payment(paymentUrl, card, email, phone);
 
     //assert Order Status
-    String orderStatusResponse = app.getOrderStatus(order);
+    String orderStatusUrlRequest = app.getOrderStatusRequestUrl(order);
+    String orderStatusResponse = sendRequest(orderStatusUrlRequest);
     String[] valuesOfOrderStatusParameters = app.getParametersFromResponse(orderStatusResponse, app.namesOfOrderStatusParameters);
     String[] valuesOfPaymentAmountInfo = app.getParametersFromResponse(valuesOfOrderStatusParameters[4], app.namesOfPaymentAmountInfo);
     app.assertOrderStatus(order, valuesOfOrderStatusParameters, valuesOfPaymentAmountInfo, "DEPOSITED");

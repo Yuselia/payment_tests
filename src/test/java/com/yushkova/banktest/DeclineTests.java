@@ -30,7 +30,8 @@ public class DeclineTests extends TestBase {
 
 
     //assert Order Status
-    String orderStatusResponse = app.getOrderStatus(order1);
+    String orderStatusUrlRequest = app.getOrderStatusRequestUrl(order1);
+    String orderStatusResponse = sendRequest(orderStatusUrlRequest);
     String[] valuesOfOrderStatusParameters = app.getParametersFromResponse(orderStatusResponse, app.namesOfOrderStatusParameters);
     String[] valuesOfPaymentAmountInfo = app.getParametersFromResponse(valuesOfOrderStatusParameters[4], app.namesOfPaymentAmountInfo);
     app.assertOrderStatus(order1, valuesOfOrderStatusParameters, valuesOfPaymentAmountInfo, "DECLINED");
@@ -57,7 +58,8 @@ public class DeclineTests extends TestBase {
     wait(1200000);
 
     //assert Order Status
-    String orderStatusResponse = app.getOrderStatus(order2);
+    String orderStatusUrlRequest = app.getOrderStatusRequestUrl(order2);
+    String orderStatusResponse = sendRequest(orderStatusUrlRequest);
     String[] valuesOfOrderStatusParameters = app.getParametersFromResponse(orderStatusResponse, app.namesOfOrderStatusParameters);
     String[] valuesOfPaymentAmountInfo = app.getParametersFromResponse(valuesOfOrderStatusParameters[4], app.namesOfPaymentAmountInfo);
     app.assertOrderStatus(order2, valuesOfOrderStatusParameters, valuesOfPaymentAmountInfo, "DECLINED");
