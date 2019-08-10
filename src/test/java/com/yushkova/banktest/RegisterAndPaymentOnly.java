@@ -9,7 +9,7 @@ import static com.yushkova.banktest.ApplicationManager.sendRequest;
 public class RegisterAndPaymentOnly extends TestBase {
 
   //test values for register.do
-  Order order = new Order("022018", Integer.parseInt("022018"), "https://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "");
+  Order order = new Order("022018", Integer.parseInt("022018"), "https://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "", 0);
   //there are correct card values
   Card card = new Card("4111 1111 1111 1111", "2019", "Декабрь", "Test", "123", "12345678");
   String email = "test@test.ru";
@@ -30,10 +30,6 @@ public class RegisterAndPaymentOnly extends TestBase {
     app.waitReturnUrl(order);
 
     //assert Order Status
-    String orderStatusUrlRequest = app.getOrderStatusRequestUrl(order);
-    String orderStatusResponse = sendRequest(orderStatusUrlRequest);
-    String[] valuesOfOrderStatusParameters = app.getParametersFromResponse(orderStatusResponse, app.namesOfOrderStatusParameters);
-    String[] valuesOfPaymentAmountInfo = app.getParametersFromResponse(valuesOfOrderStatusParameters[4], app.namesOfPaymentAmountInfo);
-    app.assertOrderStatus(order, valuesOfOrderStatusParameters, valuesOfPaymentAmountInfo, "DEPOSITED");
+    app.assertOrder(order, "DEPOSITED");
   }
 }

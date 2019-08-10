@@ -28,13 +28,12 @@ public class ApplicationManager {
   private String partOfPaymentUrl = "merchants/rbs/payment_ru.html?";
   private String partOfOrderStatusUrl = "rest/getOrderStatusExtended.do?";
   private String partOfReverseUrl = "rest/reverse.do?language=ru";
-  private String partOfRefundUrl = "rest/refund.do? ";
+  private String partOfRefundUrl = "rest/refund.do?";
 
   String[] namesOfRegisterParameters = {"orderId", "formUrl"};
   String[] namesOfOrderStatusParameters = {"errorCode", "errorMessage", "orderStatus", "amount", "paymentAmountInfo"};
   String[] namesOfPaymentAmountInfo = {"paymentState", "approvedAmount", "depositedAmount", "refundedAmount"};
-  String[] namesOfReverseParameters = {"errorCode", "errorMessage"};
-  String[] namesOfRefundParameters = {"orderId", "formUrl"};
+  String[] namesOfReverseAndRefundParameters = {"errorCode", "errorMessage"};
 
   public void init() {
     wd = new ChromeDriver();
@@ -204,18 +203,24 @@ public class ApplicationManager {
         assertEquals("0", valuesOfPaymentAmountInfo[2]);
         assertEquals("0", valuesOfPaymentAmountInfo[3]);;
         break;
-      case ("REFUND"):
-        assertEquals("4", valuesOfOrderStatusParameters[2]);
-        assertEquals("0", valuesOfPaymentAmountInfo[1]);
-        assertEquals("0", valuesOfPaymentAmountInfo[2]);
-        assertEquals("0", valuesOfPaymentAmountInfo[3]);;
-        break;
       default:
         break;
     }
   }
 
-  private void type(By locator, String text) {
+  public void assertOrderStatus(Order order, String[] valuesOfOrderStatusParameters, String[] valuesOfPaymentAmountInfo, String assertPaymentState, int amountAfterRefund) {
+    assertEquals("0", valuesOfOrderStatusParameters[0]);
+    assertEquals("Успешно", valuesOfOrderStatusParameters[1]);
+    assertEquals(String.valueOf(order.getOrderAmountInt()), valuesOfOrderStatusParameters[3]);
+    assertEquals(assertPaymentState, valuesOfPaymentAmountInfo[0]);
+    assertEquals("4", valuesOfOrderStatusParameters[2]);
+    assertEquals(String.valueOf(order.getOrderAmountInt()), valuesOfPaymentAmountInfo[1]);
+    assertEquals(String.valueOf(amountAfterRefund), valuesOfPaymentAmountInfo[2]);
+    assertEquals(String.valueOf(order.getOrderAmountInt() - amountAfterRefund), valuesOfPaymentAmountInfo[3]);;
+
+  }
+
+    private void type(By locator, String text) {
     wd.findElement(locator).click();
     wd.findElement(locator).clear();
     wd.findElement(locator).sendKeys(text);
@@ -233,12 +238,29 @@ public class ApplicationManager {
     else return;
   }
 
-  public void assertReverseStatus(Order order, String[] valuesOfReverseParameters) {
-    assertEquals("0", valuesOfReverseParameters[0]);
-    assertEquals("Успешно", valuesOfReverseParameters[1]);
+  public void assertRequestStatus(Order order, String[] valuesOfParameters) {
+    assertEquals("0", valuesOfParameters[0]);
+    assertEquals("Успешно", valuesOfParameters[1]);
   }
 
-  public void assertRefundStatus(Order order, String[] valuesOfRefundParameters) {
+  public void assertWrongRequest(Order order, String[] valuesOfParameters) {
+    assertEquals("7", valuesOfParameters[0]);
+    assertEquals("Сумма возврата превышает сумму списания", valuesOfParameters[1]);
+  }
 
+  public void assertOrder(Order order, String assertPaymentState) throws Exception {
+    String orderStatusUrlRequest = getOrderStatusRequestUrl(order);
+    String orderStatusResponse = sendRequest(orderStatusUrlRequest);
+    String[] valuesOfOrderStatusParameters = getParametersFromResponse(orderStatusResponse, namesOfOrderStatusParameters);
+    String[] valuesOfPaymentAmountInfo = getParametersFromResponse(valuesOfOrderStatusParameters[4], namesOfPaymentAmountInfo);
+    assertOrderStatus(order, valuesOfOrderStatusParameters, valuesOfPaymentAmountInfo, assertPaymentState);
+  }
+
+  public void assertOrder(Order order, String assertPaymentState, int amountAfterRefund) throws Exception {
+    String orderStatusUrlRequest = getOrderStatusRequestUrl(order);
+    String orderStatusResponse = sendRequest(orderStatusUrlRequest);
+    String[] valuesOfOrderStatusParameters = getParametersFromResponse(orderStatusResponse, namesOfOrderStatusParameters);
+    String[] valuesOfPaymentAmountInfo = getParametersFromResponse(valuesOfOrderStatusParameters[4], namesOfPaymentAmountInfo);
+    assertOrderStatus(order, valuesOfOrderStatusParameters, valuesOfPaymentAmountInfo, assertPaymentState, amountAfterRefund);
   }
 }

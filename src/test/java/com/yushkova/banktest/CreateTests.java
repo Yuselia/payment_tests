@@ -12,7 +12,7 @@ public class CreateTests extends TestBase {
   @Test
   public void createStateAfterClosePaymentPage() throws Exception {
     //test values for register.do
-    Order order1 = new Order("022018", Integer.parseInt("022018"), "http://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "");
+    Order order1 = new Order("022018", Integer.parseInt("022018"), "http://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "", 0);
     //test values for payment
     Card card1 = new Card("4111 1111 1111 1111", "2019", "Декабрь", "Test", "123", "12345678");
     String email = "test@test.ru";
@@ -30,17 +30,13 @@ public class CreateTests extends TestBase {
     app.stop();
 
     //assert Order Status
-    String orderStatusUrlRequest = app.getOrderStatusRequestUrl(order1);
-    String orderStatusResponse = sendRequest(orderStatusUrlRequest);
-    String[] valuesOfOrderStatusParameters = app.getParametersFromResponse(orderStatusResponse, app.namesOfOrderStatusParameters);
-    String[] valuesOfPaymentAmountInfo = app.getParametersFromResponse(valuesOfOrderStatusParameters[4], app.namesOfPaymentAmountInfo);
-    app.assertOrderStatus(order1, valuesOfOrderStatusParameters, valuesOfPaymentAmountInfo, "CREATED");
+    app.assertOrder(order1, "CREATED");
   }
 
   @Test
   public void createStateAfterOnePaymentTry() throws Exception {
     //test values for register.do
-    Order order2 = new Order("022018", Integer.parseInt("022018"), "https://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "");
+    Order order2 = new Order("022018", Integer.parseInt("022018"), "https://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "", 0);
     //Here should be not valid values of card
     Card card2 = new Card("4111 1111 1111 1111", "2019", "Декабрь", "Test", "124", "12345678");
     String email = "test@test.ru";
@@ -57,10 +53,6 @@ public class CreateTests extends TestBase {
     app.payment(paymentUrl, card2, email, phone, order2);
 
     //assert Order Status
-      String orderStatusUrlRequest = app.getOrderStatusRequestUrl(order2);
-      String orderStatusResponse = sendRequest(orderStatusUrlRequest);
-      String[] valuesOfOrderStatusParameters = app.getParametersFromResponse(orderStatusResponse, app.namesOfOrderStatusParameters);
-      String[] valuesOfPaymentAmountInfo = app.getParametersFromResponse(valuesOfOrderStatusParameters[4], app.namesOfPaymentAmountInfo);
-      app.assertOrderStatus(order2, valuesOfOrderStatusParameters, valuesOfPaymentAmountInfo, "CREATED");
+    app.assertOrder(order2, "CREATED");
   }
 }

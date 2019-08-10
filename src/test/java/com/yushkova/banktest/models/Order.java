@@ -8,8 +8,9 @@ public class Order {
   private final String password;
   private final String orderNumber;
   private String orderId;
+  private int amountAfterRefund;
 
-  public Order(String orderAmount, int orderAmountInt, String returnUrl, String userName, String password, String orderNumber, String orderId) {
+  public Order(String orderAmount, int orderAmountInt, String returnUrl, String userName, String password, String orderNumber, String orderId, int amountAfterRefund) {
     this.orderAmount = orderAmount;
     this.orderAmountInt = orderAmountInt;
     this.returnUrl = returnUrl;
@@ -17,6 +18,7 @@ public class Order {
     this.password = password;
     this.orderNumber = orderNumber;
     this.orderId = orderId;
+    this.amountAfterRefund = amountAfterRefund;
   }
 
   public String getOrderAmount() {
@@ -47,7 +49,15 @@ public class Order {
     return orderId;
   }
 
+  public int getAmountAfterRefund() {
+    return amountAfterRefund;
+  }
+
   public void setOrderId(String orderId) {
     this.orderId = orderId;
+  }
+
+  public void setAmountAfterRefund(int amountAfterRefund) {
+    this.amountAfterRefund = amountAfterRefund;
   }
 }

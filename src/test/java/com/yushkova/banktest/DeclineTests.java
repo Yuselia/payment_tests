@@ -12,7 +12,7 @@ public class DeclineTests extends TestBase {
   public void declineBankAuthorization() throws Exception {
     int tryCount = 3;
     //test values for register.do
-    Order order2 = new Order("022018", Integer.parseInt("022018"), "https://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "");
+    Order order2 = new Order("022018", Integer.parseInt("022018"), "https://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "", 0);
     //Here should be wrong code from sms
     Card card2 = new Card("4111 1111 1111 1111", "2019", "Декабрь", "Test", "123", "1456");
     String email = "test@test.ru";
@@ -44,7 +44,7 @@ public class DeclineTests extends TestBase {
   public void tryThreeTimes() throws Exception {
     int tryCount = 3;
     //test values for register.do
-    Order order2 = new Order("022018", Integer.parseInt("022018"), "https://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "");
+    Order order2 = new Order("022018", Integer.parseInt("022018"), "https://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "", 0);
     //Here should be wrong code from sms
     Card card2 = new Card("4111 1111 1111 1111", "2019", "Декабрь", "Test", "124", "12345678");
     String email = "test@test.ru";
@@ -76,7 +76,7 @@ public class DeclineTests extends TestBase {
   public void declineTimeOutAfterOpenedPage() throws Exception {
     int sessionTimeoutSecs = 30;
     //test values for register.do
-    Order order1 = new Order("022018", Integer.parseInt("022018"), "https://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "");
+    Order order1 = new Order("022018", Integer.parseInt("022018"), "https://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "", 0);
     //test values for payment
     Card card1 = new Card("4111 1111 1111 1111", "2019", "Декабрь", "Test", "123", "12345678");
     String email = "test@test.ru";
@@ -94,18 +94,14 @@ public class DeclineTests extends TestBase {
     app.waitReturnUrl(order1);
 
     //assert Order Status
-    String orderStatusUrlRequest = app.getOrderStatusRequestUrl(order1);
-    String orderStatusResponse = sendRequest(orderStatusUrlRequest);
-    String[] valuesOfOrderStatusParameters = app.getParametersFromResponse(orderStatusResponse, app.namesOfOrderStatusParameters);
-    String[] valuesOfPaymentAmountInfo = app.getParametersFromResponse(valuesOfOrderStatusParameters[4], app.namesOfPaymentAmountInfo);
-    app.assertOrderStatus(order1, valuesOfOrderStatusParameters, valuesOfPaymentAmountInfo, "DECLINED");
+    app.assertOrder(order1, "DECLINED");
   }
 
   @Test
   public void declineAfterOneTryAndTimeOut() throws Exception {
     int sessionTimeoutSecs = 30;
     //test values for register.do
-    Order order2 = new Order("022018", Integer.parseInt("022018"), "https://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "");
+    Order order2 = new Order("022018", Integer.parseInt("022018"), "https://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "", 0);
     //Here should be not valid values of card
     Card card2 = new Card("4111 1111 1111 1111", "2019", "Декабрь", "Test", "124", "12345678");
     String email = "test@test.ru";
@@ -124,10 +120,6 @@ public class DeclineTests extends TestBase {
     app.waitReturnUrl(order2);
 
     //assert Order Status
-    String orderStatusUrlRequest = app.getOrderStatusRequestUrl(order2);
-    String orderStatusResponse = sendRequest(orderStatusUrlRequest);
-    String[] valuesOfOrderStatusParameters = app.getParametersFromResponse(orderStatusResponse, app.namesOfOrderStatusParameters);
-    String[] valuesOfPaymentAmountInfo = app.getParametersFromResponse(valuesOfOrderStatusParameters[4], app.namesOfPaymentAmountInfo);
-    app.assertOrderStatus(order2, valuesOfOrderStatusParameters, valuesOfPaymentAmountInfo, "DECLINED");
+    app.assertOrder(order2, "DECLINED");
   }
 }

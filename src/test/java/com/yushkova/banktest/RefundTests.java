@@ -9,15 +9,17 @@ import static com.yushkova.banktest.ApplicationManager.sendRequest;
 public class RefundTests extends TestBase {
 
   //test values for register.do
-  Order order = new Order("022018", Integer.parseInt("022018"), "https://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "");
+  Order order = new Order("022018", Integer.parseInt("022018"), "https://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "", 0);
   //there are correct card values
   Card card = new Card("5555 5555 5555 5599", "2019", "Декабрь", "Test", "123", "");
   String email = "";
   String phone = "";
-  String amounRefund = "010010";
+  String amountRefundString = "010010";
 
   @Test
   public void refundTest() throws Exception {
+    int amountRefund = Integer.parseInt(amountRefundString);
+    int countCanRefund = order.getOrderAmountInt() / amountRefund;
     //register
     String registerRequest = app.getRegisterRequestUrl(order);
     String registerResponse = sendRequest(registerRequest);
@@ -31,16 +33,28 @@ public class RefundTests extends TestBase {
     app.waitReturnUrl(order);
 
     //assert Order Status
-    String orderStatusUrlRequest = app.getOrderStatusRequestUrl(order);
-    String orderStatusResponse = sendRequest(orderStatusUrlRequest);
-    String[] valuesOfOrderStatusParameters = app.getParametersFromResponse(orderStatusResponse, app.namesOfOrderStatusParameters);
-    String[] valuesOfPaymentAmountInfo = app.getParametersFromResponse(valuesOfOrderStatusParameters[4], app.namesOfPaymentAmountInfo);
-    app.assertOrderStatus(order, valuesOfOrderStatusParameters, valuesOfPaymentAmountInfo, "DEPOSITED");
+    app.assertOrder(order, "DEPOSITED");
+    String refundRequest = app.getRefundUrl(order, amountRefundString);
 
     //refund
-    String refundRequest = app.getRefundUrl(order, amounRefund);
+    for (int i = 0; i < countCanRefund; i ++) {
+      String refundResponse = sendRequest(refundRequest);
+      String[] valuesOfRefundParameters = app.getParametersFromResponse(refundResponse, app.namesOfReverseAndRefundParameters);
+      app.assertRequestStatus(order, valuesOfRefundParameters);
+      amountRefund = amountRefund * (i+1);
+      order.setAmountAfterRefund(order.getOrderAmountInt() - amountRefund);
+
+      app.assertOrder(order, "REFUNDED", order.getAmountAfterRefund());
+    }
+
+    tryToRefundOneMore(amountRefund, refundRequest);
+  }
+
+  private void tryToRefundOneMore(int amountRefund, String refundRequest) throws Exception {
     String refundResponse = sendRequest(refundRequest);
-    String[] valuesOfRefundParameters = app.getParametersFromResponse(refundResponse, app.namesOfRefundParameters);
-    app.assertRefundStatus(order, valuesOfRefundParameters);
+    String[] valuesOfRefundParameters = app.getParametersFromResponse(refundResponse, app.namesOfReverseAndRefundParameters);
+    app.assertWrongRequest(order, valuesOfRefundParameters);
+
+    app.assertOrder(order, "REFUNDED", order.getAmountAfterRefund());
   }
 }

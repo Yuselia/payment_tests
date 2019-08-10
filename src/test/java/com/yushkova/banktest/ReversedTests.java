@@ -1,6 +1,5 @@
 package com.yushkova.banktest;
 
-import com.yushkova.banktest.TestBase;
 import com.yushkova.banktest.models.Card;
 import com.yushkova.banktest.models.Order;
 import org.testng.annotations.Test;
@@ -10,7 +9,7 @@ import static com.yushkova.banktest.ApplicationManager.sendRequest;
 public class ReversedTests extends TestBase {
 
   //test values for register.do
-  Order order = new Order("022018", Integer.parseInt("022018"), "https://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "");
+  Order order = new Order("022018", Integer.parseInt("022018"), "https://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "", 0);
   //there are correct card values
   Card card = new Card("5555 5555 5555 5599", "2019", "Декабрь", "Test", "123", "");
   String email = "";
@@ -31,22 +30,15 @@ public class ReversedTests extends TestBase {
     app.waitReturnUrl(order);
 
     //assert Order Status
-    String orderStatusUrlRequest = app.getOrderStatusRequestUrl(order);
-    String orderStatusResponse = sendRequest(orderStatusUrlRequest);
-    String[] valuesOfOrderStatusParameters = app.getParametersFromResponse(orderStatusResponse, app.namesOfOrderStatusParameters);
-    String[] valuesOfPaymentAmountInfo = app.getParametersFromResponse(valuesOfOrderStatusParameters[4], app.namesOfPaymentAmountInfo);
-    app.assertOrderStatus(order, valuesOfOrderStatusParameters, valuesOfPaymentAmountInfo, "DEPOSITED");
+    app.assertOrder(order, "DEPOSITED");
 
     //reverse
     String reverseRequest = app.getReverseUrl(order);
     String reverseResponse = sendRequest(reverseRequest);
-    String[] valuesOfReverseParameters = app.getParametersFromResponse(reverseResponse, app.namesOfReverseParameters);
-    app.assertReverseStatus(order, valuesOfReverseParameters);
+    String[] valuesOfReverseParameters = app.getParametersFromResponse(reverseResponse, app.namesOfReverseAndRefundParameters);
+    app.assertRequestStatus(order, valuesOfReverseParameters);
 
     //assert Order Status again
-    String orderStatusResponseAfterReverse = sendRequest(orderStatusUrlRequest);
-    String[] valuesOfOrderStatusParameters2 = app.getParametersFromResponse(orderStatusResponseAfterReverse, app.namesOfOrderStatusParameters);
-    String[] valuesOfPaymentAmountInfo2 = app.getParametersFromResponse(valuesOfOrderStatusParameters2[4], app.namesOfPaymentAmountInfo);
-    app.assertOrderStatus(order, valuesOfOrderStatusParameters2, valuesOfPaymentAmountInfo2, "REVERSED");
+    app.assertOrder(order, "REVERSED");
   }
 }
