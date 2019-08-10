@@ -27,6 +27,8 @@ public class RefundTests extends TestBase {
     //payment
     String paymentUrl = app.getPaymentUrl(valuesOfRegisterParameters);
     app.payment(paymentUrl, card, email, phone, order);
+    app.afterClickPaymentButton(order, card, true);
+    app.waitReturnUrl(order);
 
     //assert Order Status
     String orderStatusUrlRequest = app.getOrderStatusRequestUrl(order);

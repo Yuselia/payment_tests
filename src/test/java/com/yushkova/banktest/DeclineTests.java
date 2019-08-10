@@ -90,7 +90,7 @@ public class DeclineTests extends TestBase {
 
     //payment
     String paymentUrl = app.getPaymentUrl(valuesOfRegisterParameters);
-    app.openPage(paymentUrl);
+    app.openPaymentPage(paymentUrl);
     app.waitReturnUrl(order1);
 
     //assert Order Status

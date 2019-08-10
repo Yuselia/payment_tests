@@ -33,7 +33,7 @@ public class ApplicationManager {
   String[] namesOfRegisterParameters = {"orderId", "formUrl"};
   String[] namesOfOrderStatusParameters = {"errorCode", "errorMessage", "orderStatus", "amount", "paymentAmountInfo"};
   String[] namesOfPaymentAmountInfo = {"paymentState", "approvedAmount", "depositedAmount", "refundedAmount"};
-  String[] namesOfReverseParameters = {"orderId", "formUrl"};
+  String[] namesOfReverseParameters = {"errorCode", "errorMessage"};
   String[] namesOfRefundParameters = {"orderId", "formUrl"};
 
   public void init() {
@@ -106,7 +106,7 @@ public class ApplicationManager {
     return mainUrl + partOfReverseUrl
             + "&orderId=" + order.getOrderId()
             + "&password=" + order.getPassword()
-            + "userName=" + order.getUserName();
+            + "&userName=" + order.getUserName();
   }
 
   public String getRefundUrl(Order order, String amount) {
@@ -115,12 +115,11 @@ public class ApplicationManager {
             + "&currency=810&language=ru"
             + "&orderId=" + order.getOrderId()
             + "&password=" + order.getPassword()
-            + "userName=" + order.getUserName();
+            + "&userName=" + order.getUserName();
   }
 
   public void payment(String paymentURL, Card card, String email, String phone, Order order) {
-    openPage(paymentURL);
-    wait.until(titleIs("Альфа-Банк"));
+    openPaymentPage(paymentURL);
     wait.until(presenceOfElementLocated(By.id("pan_visible")));
     type(By.id("pan_visible"), card.getCardNumber());
     wd.findElement(By.id("month-button")).click();
@@ -135,9 +134,6 @@ public class ApplicationManager {
       type(By.id("email"), email);
       type(By.id("phoneInput"), phone);
     }
-    /*if(wd.findElement(By.id("phoneInput")).isDisplayed()) {
-      type(By.id("phoneInput"), phone);
-    }*/
     wd.findElement(By.id("buttonPayment")).click();
   }
 
@@ -167,11 +163,11 @@ public class ApplicationManager {
       //wd.findElement(By.xpath("//p[text() = 'Ошибка проведения платежа. Попробуйте позднее. Если данная ошибка возникла повторно, обратитесь в Ваш банк для разъяснения причин. Телефон банка должен быть указан на обратной стороне карты.']"));
       return;
     }
-    //waitReturnUrl(order);
   }
 
-  public void openPage(String URL) {
+  public void openPaymentPage(String URL) {
     wd.get(URL);
+    wait.until(titleIs("Альфа-Банк"));
   }
 
   public void waitReturnUrl(Order order) {
@@ -202,9 +198,9 @@ public class ApplicationManager {
         assertEquals("0", valuesOfPaymentAmountInfo[2]);
         assertEquals("0", valuesOfPaymentAmountInfo[3]);;
         break;
-     /* case ("REVERSED"):
+      case ("REVERSED"):
         assertEquals("3", valuesOfOrderStatusParameters[2]);
-        assertEquals("0", valuesOfPaymentAmountInfo[1]);
+        assertEquals(String.valueOf(order.getOrderAmountInt()), valuesOfPaymentAmountInfo[1]);
         assertEquals("0", valuesOfPaymentAmountInfo[2]);
         assertEquals("0", valuesOfPaymentAmountInfo[3]);;
         break;
@@ -213,7 +209,7 @@ public class ApplicationManager {
         assertEquals("0", valuesOfPaymentAmountInfo[1]);
         assertEquals("0", valuesOfPaymentAmountInfo[2]);
         assertEquals("0", valuesOfPaymentAmountInfo[3]);;
-        break;*/
+        break;
       default:
         break;
     }
@@ -238,6 +234,8 @@ public class ApplicationManager {
   }
 
   public void assertReverseStatus(Order order, String[] valuesOfReverseParameters) {
+    assertEquals("0", valuesOfReverseParameters[0]);
+    assertEquals("Успешно", valuesOfReverseParameters[1]);
   }
 
   public void assertRefundStatus(Order order, String[] valuesOfRefundParameters) {

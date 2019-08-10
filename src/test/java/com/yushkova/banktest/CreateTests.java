@@ -5,6 +5,7 @@ import com.yushkova.banktest.models.Order;
 import org.testng.annotations.Test;
 
 import static com.yushkova.banktest.ApplicationManager.sendRequest;
+import static org.openqa.selenium.support.ui.ExpectedConditions.titleIs;
 
 public class CreateTests extends TestBase {
 
@@ -25,7 +26,7 @@ public class CreateTests extends TestBase {
 
     //payment
     String paymentUrl = app.getPaymentUrl(valuesOfRegisterParameters);
-    app.openPage(paymentUrl);
+    app.openPaymentPage(paymentUrl);
     app.stop();
 
     //assert Order Status

@@ -27,6 +27,8 @@ public class ReversedTests extends TestBase {
     //payment
     String paymentUrl = app.getPaymentUrl(valuesOfRegisterParameters);
     app.payment(paymentUrl, card, email, phone, order);
+    app.afterClickPaymentButton(order, card, true);
+    app.waitReturnUrl(order);
 
     //assert Order Status
     String orderStatusUrlRequest = app.getOrderStatusRequestUrl(order);
@@ -40,5 +42,11 @@ public class ReversedTests extends TestBase {
     String reverseResponse = sendRequest(reverseRequest);
     String[] valuesOfReverseParameters = app.getParametersFromResponse(reverseResponse, app.namesOfReverseParameters);
     app.assertReverseStatus(order, valuesOfReverseParameters);
+
+    //assert Order Status again
+    String orderStatusResponseAfterReverse = sendRequest(orderStatusUrlRequest);
+    String[] valuesOfOrderStatusParameters2 = app.getParametersFromResponse(orderStatusResponseAfterReverse, app.namesOfOrderStatusParameters);
+    String[] valuesOfPaymentAmountInfo2 = app.getParametersFromResponse(valuesOfOrderStatusParameters2[4], app.namesOfPaymentAmountInfo);
+    app.assertOrderStatus(order, valuesOfOrderStatusParameters2, valuesOfPaymentAmountInfo2, "REVERSED");
   }
 }
