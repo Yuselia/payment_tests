@@ -17,8 +17,8 @@ public class CreateTests extends TestBase {
 
     //register
     String registerRequest = app.getGetURLHelper().getRegisterRequestUrl(order1);
-    String registerResponse = app.sendRequest(registerRequest);
-    String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
+    String registerResponse = app.getOrderAssertHelper().sendRequest(registerRequest);
+    String[] valuesOfRegisterParameters = app.getOrderAssertHelper().getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order1.withOrderId(valuesOfRegisterParameters[0]);
 
     //payment
@@ -27,7 +27,7 @@ public class CreateTests extends TestBase {
     app.stop();
 
     //assert Order Status
-    app.assertOrder(order1, "CREATED", namesOfOrderStatusParameters, namesOfPaymentAmountInfo);
+    app.getOrderAssertHelper().assertOrder(order1, "CREATED", namesOfOrderStatusParameters, namesOfPaymentAmountInfo);
   }
 
   @Test
@@ -41,8 +41,8 @@ public class CreateTests extends TestBase {
 
     //register
     String registerRequest = app.getGetURLHelper().getRegisterRequestUrl(order2);
-    String registerResponse = app.sendRequest(registerRequest);
-    String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
+    String registerResponse = app.getOrderAssertHelper().sendRequest(registerRequest);
+    String[] valuesOfRegisterParameters = app.getOrderAssertHelper().getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order2.withOrderId(valuesOfRegisterParameters[0]);
 
     //payment
@@ -50,6 +50,6 @@ public class CreateTests extends TestBase {
     app.payment(paymentUrl, card2, email, phone, order2);
 
     //assert Order Status
-    app.assertOrder(order2, "CREATED", namesOfOrderStatusParameters, namesOfPaymentAmountInfo);
+    app.getOrderAssertHelper().assertOrder(order2, "CREATED", namesOfOrderStatusParameters, namesOfPaymentAmountInfo);
   }
 }

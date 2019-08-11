@@ -17,8 +17,8 @@ public class RegisterAndPaymentOnly extends TestBase {
   public void smoke() throws Exception {
     //register
     String registerRequest = app.getGetURLHelper().getRegisterRequestUrl(order);
-    String registerResponse = app.sendRequest(registerRequest);
-    String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
+    String registerResponse = app.getOrderAssertHelper().sendRequest(registerRequest);
+    String[] valuesOfRegisterParameters = app.getOrderAssertHelper().getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order.withOrderId(valuesOfRegisterParameters[0]);
 
     //payment
@@ -28,6 +28,6 @@ public class RegisterAndPaymentOnly extends TestBase {
     app.waitReturnUrl(order);
 
     //assert Order Status
-    app.assertOrder(order, "DEPOSITED", namesOfOrderStatusParameters, namesOfPaymentAmountInfo);
+    app.getOrderAssertHelper().assertOrder(order, "DEPOSITED", namesOfOrderStatusParameters, namesOfPaymentAmountInfo);
   }
 }

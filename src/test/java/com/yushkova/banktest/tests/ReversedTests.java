@@ -17,8 +17,8 @@ public class ReversedTests extends TestBase {
   public void reverseTest() throws Exception {
     //register
     String registerRequest = app.getGetURLHelper().getRegisterRequestUrl(order);
-    String registerResponse = app.sendRequest(registerRequest);
-    String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
+    String registerResponse = app.getOrderAssertHelper().sendRequest(registerRequest);
+    String[] valuesOfRegisterParameters = app.getOrderAssertHelper().getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order.withOrderId(valuesOfRegisterParameters[0]);
 
     //payment
@@ -28,15 +28,15 @@ public class ReversedTests extends TestBase {
     app.waitReturnUrl(order);
 
     //assert Order Status
-    app.assertOrder(order, "DEPOSITED", namesOfOrderStatusParameters, namesOfPaymentAmountInfo);
+    app.getOrderAssertHelper().assertOrder(order, "DEPOSITED", namesOfOrderStatusParameters, namesOfPaymentAmountInfo);
 
     //reverse
     String reverseRequest = app.getGetURLHelper().getReverseUrl(order);
-    String reverseResponse = app.sendRequest(reverseRequest);
-    String[] valuesOfReverseParameters = app.getParametersFromResponse(reverseResponse, namesOfReverseAndRefundParameters);
-    app.assertRequestStatus(order, valuesOfReverseParameters);
+    String reverseResponse = app.getOrderAssertHelper().sendRequest(reverseRequest);
+    String[] valuesOfReverseParameters = app.getOrderAssertHelper().getParametersFromResponse(reverseResponse, namesOfReverseAndRefundParameters);
+    app.getOrderAssertHelper().assertRequestStatus(order, valuesOfReverseParameters);
 
     //assert Order Status again
-    app.assertOrder(order, "REVERSED", namesOfOrderStatusParameters, namesOfPaymentAmountInfo);
+    app.getOrderAssertHelper().assertOrder(order, "REVERSED", namesOfOrderStatusParameters, namesOfPaymentAmountInfo);
   }
 }
