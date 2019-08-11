@@ -30,10 +30,10 @@ public class ApplicationManager {
   private String partOfReverseUrl = "rest/reverse.do?language=ru";
   private String partOfRefundUrl = "rest/refund.do?";
 
-  String[] namesOfRegisterParameters = {"orderId", "formUrl"};
+  /*String[] namesOfRegisterParameters = {"orderId", "formUrl"};
   String[] namesOfOrderStatusParameters = {"errorCode", "errorMessage", "orderStatus", "amount", "paymentAmountInfo"};
   String[] namesOfPaymentAmountInfo = {"paymentState", "approvedAmount", "depositedAmount", "refundedAmount"};
-  String[] namesOfReverseAndRefundParameters = {"errorCode", "errorMessage"};
+  String[] namesOfReverseAndRefundParameters = {"errorCode", "errorMessage"};*/
 
   public void init() {
     wd = new ChromeDriver();
@@ -248,7 +248,7 @@ public class ApplicationManager {
     assertEquals("Сумма возврата превышает сумму списания", valuesOfParameters[1]);
   }
 
-  public void assertOrder(Order order, String assertPaymentState) throws Exception {
+  public void assertOrder(Order order, String assertPaymentState, String[] namesOfOrderStatusParameters, String[] namesOfPaymentAmountInfo) throws Exception {
     String orderStatusUrlRequest = getOrderStatusRequestUrl(order);
     String orderStatusResponse = sendRequest(orderStatusUrlRequest);
     String[] valuesOfOrderStatusParameters = getParametersFromResponse(orderStatusResponse, namesOfOrderStatusParameters);
@@ -256,7 +256,7 @@ public class ApplicationManager {
     assertOrderStatus(order, valuesOfOrderStatusParameters, valuesOfPaymentAmountInfo, assertPaymentState);
   }
 
-  public void assertOrder(Order order, String assertPaymentState, int amountAfterRefund) throws Exception {
+  public void assertOrder(Order order, String assertPaymentState, int amountAfterRefund, String[] namesOfOrderStatusParameters, String[] namesOfPaymentAmountInfo) throws Exception {
     String orderStatusUrlRequest = getOrderStatusRequestUrl(order);
     String orderStatusResponse = sendRequest(orderStatusUrlRequest);
     String[] valuesOfOrderStatusParameters = getParametersFromResponse(orderStatusResponse, namesOfOrderStatusParameters);

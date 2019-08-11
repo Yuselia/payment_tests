@@ -1,11 +1,10 @@
-package com.yushkova.banktest;
+package com.yushkova.banktest.tests;
 
 import com.yushkova.banktest.models.Card;
 import com.yushkova.banktest.models.Order;
 import org.testng.annotations.Test;
 
 import static com.yushkova.banktest.ApplicationManager.sendRequest;
-import static org.openqa.selenium.support.ui.ExpectedConditions.titleIs;
 
 public class CreateTests extends TestBase {
 
@@ -21,7 +20,7 @@ public class CreateTests extends TestBase {
     //register
     String registerRequest = app.getRegisterRequestUrl(order1);
     String registerResponse = sendRequest(registerRequest);
-    String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, app.namesOfRegisterParameters);
+    String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order1.withOrderId(valuesOfRegisterParameters[0]);
 
     //payment
@@ -30,7 +29,7 @@ public class CreateTests extends TestBase {
     app.stop();
 
     //assert Order Status
-    app.assertOrder(order1, "CREATED");
+    app.assertOrder(order1, "CREATED", namesOfOrderStatusParameters, namesOfPaymentAmountInfo);
   }
 
   @Test
@@ -45,7 +44,7 @@ public class CreateTests extends TestBase {
     //register
     String registerRequest = app.getRegisterRequestUrl(order2);
     String registerResponse = sendRequest(registerRequest);
-    String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, app.namesOfRegisterParameters);
+    String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order2.withOrderId(valuesOfRegisterParameters[0]);
 
     //payment
@@ -53,6 +52,6 @@ public class CreateTests extends TestBase {
     app.payment(paymentUrl, card2, email, phone, order2);
 
     //assert Order Status
-    app.assertOrder(order2, "CREATED");
+    app.assertOrder(order2, "CREATED", namesOfOrderStatusParameters, namesOfPaymentAmountInfo);
   }
 }

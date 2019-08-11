@@ -1,4 +1,4 @@
-package com.yushkova.banktest;
+package com.yushkova.banktest.tests;
 
 import com.yushkova.banktest.models.Card;
 import com.yushkova.banktest.models.Order;
@@ -20,7 +20,7 @@ public class ReversedTests extends TestBase {
     //register
     String registerRequest = app.getRegisterRequestUrl(order);
     String registerResponse = sendRequest(registerRequest);
-    String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, app.namesOfRegisterParameters);
+    String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order.withOrderId(valuesOfRegisterParameters[0]);
 
     //payment
@@ -30,15 +30,15 @@ public class ReversedTests extends TestBase {
     app.waitReturnUrl(order);
 
     //assert Order Status
-    app.assertOrder(order, "DEPOSITED");
+    app.assertOrder(order, "DEPOSITED", namesOfOrderStatusParameters, namesOfPaymentAmountInfo);
 
     //reverse
     String reverseRequest = app.getReverseUrl(order);
     String reverseResponse = sendRequest(reverseRequest);
-    String[] valuesOfReverseParameters = app.getParametersFromResponse(reverseResponse, app.namesOfReverseAndRefundParameters);
+    String[] valuesOfReverseParameters = app.getParametersFromResponse(reverseResponse, namesOfReverseAndRefundParameters);
     app.assertRequestStatus(order, valuesOfReverseParameters);
 
     //assert Order Status again
-    app.assertOrder(order, "REVERSED");
+    app.assertOrder(order, "REVERSED", namesOfOrderStatusParameters, namesOfPaymentAmountInfo);
   }
 }
