@@ -1,6 +1,6 @@
 package com.yushkova.banktest.tests;
 
-import com.yushkova.banktest.ApplicationManager;
+import com.yushkova.banktest.appmanager.ApplicationManager;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 

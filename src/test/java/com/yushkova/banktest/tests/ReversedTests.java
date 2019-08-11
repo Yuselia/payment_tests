@@ -4,8 +4,6 @@ import com.yushkova.banktest.models.Card;
 import com.yushkova.banktest.models.Order;
 import org.testng.annotations.Test;
 
-import static com.yushkova.banktest.ApplicationManager.sendRequest;
-
 public class ReversedTests extends TestBase {
 
   //test values for register.do
@@ -19,7 +17,7 @@ public class ReversedTests extends TestBase {
   public void reverseTest() throws Exception {
     //register
     String registerRequest = app.getRegisterRequestUrl(order);
-    String registerResponse = sendRequest(registerRequest);
+    String registerResponse = app.sendRequest(registerRequest);
     String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order.withOrderId(valuesOfRegisterParameters[0]);
 
@@ -34,7 +32,7 @@ public class ReversedTests extends TestBase {
 
     //reverse
     String reverseRequest = app.getReverseUrl(order);
-    String reverseResponse = sendRequest(reverseRequest);
+    String reverseResponse = app.sendRequest(reverseRequest);
     String[] valuesOfReverseParameters = app.getParametersFromResponse(reverseResponse, namesOfReverseAndRefundParameters);
     app.assertRequestStatus(order, valuesOfReverseParameters);
 

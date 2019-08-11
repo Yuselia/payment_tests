@@ -1,4 +1,4 @@
-package com.yushkova.banktest;
+package com.yushkova.banktest.appmanager;
 
 import com.yushkova.banktest.models.Card;
 import com.yushkova.banktest.models.Order;
@@ -19,8 +19,14 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.urlContains;
 import static org.testng.AssertJUnit.assertEquals;
 
 public class ApplicationManager {
-  private ChromeDriver wd;
-  private WebDriverWait wait;
+  protected ChromeDriver wd;
+  protected WebDriverWait wait;
+
+
+  public void init() {
+    wd = new ChromeDriver();
+    wait = new WebDriverWait(wd, 80);
+  }
 
   //urls
   private String mainUrl = "https://web.rbsdev.com/alfapayment-release/";
@@ -29,42 +35,6 @@ public class ApplicationManager {
   private String partOfOrderStatusUrl = "rest/getOrderStatusExtended.do?";
   private String partOfReverseUrl = "rest/reverse.do?language=ru";
   private String partOfRefundUrl = "rest/refund.do?";
-
-  /*String[] namesOfRegisterParameters = {"orderId", "formUrl"};
-  String[] namesOfOrderStatusParameters = {"errorCode", "errorMessage", "orderStatus", "amount", "paymentAmountInfo"};
-  String[] namesOfPaymentAmountInfo = {"paymentState", "approvedAmount", "depositedAmount", "refundedAmount"};
-  String[] namesOfReverseAndRefundParameters = {"errorCode", "errorMessage"};*/
-
-  public void init() {
-    wd = new ChromeDriver();
-    wait = new WebDriverWait(wd, 80);
-  }
-
-  public static String sendRequest(String url) throws Exception {
-    URL obj = new URL(url);
-    HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
-    con.setRequestMethod("GET");
-    int responseCode = con.getResponseCode();
-    assertEquals(200, responseCode);
-    BufferedReader in = new BufferedReader(
-            new InputStreamReader(con.getInputStream()));
-    String inputLine;
-    StringBuffer response = new StringBuffer();
-    while ((inputLine = in.readLine()) != null) {
-      response.append(inputLine);
-    }
-    in.close();
-    return response.toString();
-  }
-
-  public String[] getParametersFromResponse(String response, String[] namesOfParameters) {
-    JSONObject myResponse = new JSONObject(response.toString());
-    String[] valuesOfParameters = new String[namesOfParameters.length];
-    for (int i = 0; i < namesOfParameters.length; i++) {
-      valuesOfParameters[i] = (myResponse.get(namesOfParameters[i])).toString();
-    }
-    return valuesOfParameters;
-  }
 
   public String getRegisterRequestUrl(Order order) {
     //get register sendRequest
@@ -117,6 +87,11 @@ public class ApplicationManager {
             + "&userName=" + order.getUserName();
   }
 
+  public void openPaymentPage(String URL) {
+    wd.get(URL);
+    wait.until(titleIs("Альфа-Банк"));
+  }
+
   public void payment(String paymentURL, Card card, String email, String phone, Order order) {
     openPaymentPage(paymentURL);
     wait.until(presenceOfElementLocated(By.id("pan_visible")));
@@ -157,20 +132,64 @@ public class ApplicationManager {
               wd, By.xpath("//*[text() = 'Введен неправильный или просроченный код. Для получения нового кода, пожалуйста, нажмите кнопку «Отправить код еще раз».']"))) {
         return;
       }
-     // wait.until(titleIs("Альфа-Банк"));
-      //wd.findElement(By.xpath("//p[text() = 'Проверьте правильность ввода карточных данных. Если данная ошибка возникла повторно, обратитесь в Ваш банк для разъяснения причин. Телефон банка должен быть указан на обратной стороне карты.']"));
-      //wd.findElement(By.xpath("//p[text() = 'Ошибка проведения платежа. Попробуйте позднее. Если данная ошибка возникла повторно, обратитесь в Ваш банк для разъяснения причин. Телефон банка должен быть указан на обратной стороне карты.']"));
       return;
     }
   }
 
-  public void openPaymentPage(String URL) {
-    wd.get(URL);
-    wait.until(titleIs("Альфа-Банк"));
-  }
-
   public void waitReturnUrl(Order order) {
     wait.until(urlContains(order.getReturnUrl()));
+  }
+
+  private void type(By locator, String text) {
+    wd.findElement(locator).click();
+    wd.findElement(locator).clear();
+    wd.findElement(locator).sendKeys(text);
+  }
+
+  boolean isElementPresent(WebDriver driver, By locator) {
+    return driver.findElements(locator).size() > 0;
+  }
+
+  public static String sendRequest(String url) throws Exception {
+    URL obj = new URL(url);
+    HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+    con.setRequestMethod("GET");
+    int responseCode = con.getResponseCode();
+    assertEquals(200, responseCode);
+    BufferedReader in = new BufferedReader(
+            new InputStreamReader(con.getInputStream()));
+    String inputLine;
+    StringBuffer response = new StringBuffer();
+    while ((inputLine = in.readLine()) != null) {
+      response.append(inputLine);
+    }
+    in.close();
+    return response.toString();
+  }
+
+  public String[] getParametersFromResponse(String response, String[] namesOfParameters) {
+    JSONObject myResponse = new JSONObject(response.toString());
+    String[] valuesOfParameters = new String[namesOfParameters.length];
+    for (int i = 0; i < namesOfParameters.length; i++) {
+      valuesOfParameters[i] = (myResponse.get(namesOfParameters[i])).toString();
+    }
+    return valuesOfParameters;
+  }
+
+  public void assertOrder(Order order, String assertPaymentState, String[] namesOfOrderStatusParameters, String[] namesOfPaymentAmountInfo) throws Exception {
+    String orderStatusUrlRequest = getOrderStatusRequestUrl(order);
+    String orderStatusResponse = sendRequest(orderStatusUrlRequest);
+    String[] valuesOfOrderStatusParameters = getParametersFromResponse(orderStatusResponse, namesOfOrderStatusParameters);
+    String[] valuesOfPaymentAmountInfo = getParametersFromResponse(valuesOfOrderStatusParameters[4], namesOfPaymentAmountInfo);
+    assertOrderStatus(order, valuesOfOrderStatusParameters, valuesOfPaymentAmountInfo, assertPaymentState);
+  }
+
+  public void assertOrder(Order order, String assertPaymentState, int amountAfterRefund, String[] namesOfOrderStatusParameters, String[] namesOfPaymentAmountInfo) throws Exception {
+    String orderStatusUrlRequest = getOrderStatusRequestUrl(order);
+    String orderStatusResponse = sendRequest(orderStatusUrlRequest);
+    String[] valuesOfOrderStatusParameters = getParametersFromResponse(orderStatusResponse, namesOfOrderStatusParameters);
+    String[] valuesOfPaymentAmountInfo = getParametersFromResponse(valuesOfOrderStatusParameters[4], namesOfPaymentAmountInfo);
+    assertOrderStatus(order, valuesOfOrderStatusParameters, valuesOfPaymentAmountInfo, assertPaymentState, amountAfterRefund);
   }
 
   public void assertOrderStatus(Order order, String[] valuesOfOrderStatusParameters, String[] valuesOfPaymentAmountInfo, String assertPaymentState) {
@@ -217,25 +236,6 @@ public class ApplicationManager {
     assertEquals(String.valueOf(order.getOrderAmountInt()), valuesOfPaymentAmountInfo[1]);
     assertEquals(String.valueOf(amountAfterRefund), valuesOfPaymentAmountInfo[2]);
     assertEquals(String.valueOf(order.getOrderAmountInt() - amountAfterRefund), valuesOfPaymentAmountInfo[3]);;
-
-  }
-
-    private void type(By locator, String text) {
-    wd.findElement(locator).click();
-    wd.findElement(locator).clear();
-    wd.findElement(locator).sendKeys(text);
-  }
-
-  boolean isElementPresent(WebDriver driver, By locator) {
-    return driver.findElements(locator).size() > 0;
-  }
-
-  public void stop() {
-    if (wd != null) {
-      wd.quit();
-      wd = null;
-    }
-    else return;
   }
 
   public void assertRequestStatus(Order order, String[] valuesOfParameters) {
@@ -248,19 +248,12 @@ public class ApplicationManager {
     assertEquals("Сумма возврата превышает сумму списания", valuesOfParameters[1]);
   }
 
-  public void assertOrder(Order order, String assertPaymentState, String[] namesOfOrderStatusParameters, String[] namesOfPaymentAmountInfo) throws Exception {
-    String orderStatusUrlRequest = getOrderStatusRequestUrl(order);
-    String orderStatusResponse = sendRequest(orderStatusUrlRequest);
-    String[] valuesOfOrderStatusParameters = getParametersFromResponse(orderStatusResponse, namesOfOrderStatusParameters);
-    String[] valuesOfPaymentAmountInfo = getParametersFromResponse(valuesOfOrderStatusParameters[4], namesOfPaymentAmountInfo);
-    assertOrderStatus(order, valuesOfOrderStatusParameters, valuesOfPaymentAmountInfo, assertPaymentState);
+  public void stop() {
+    if (wd != null) {
+      wd.quit();
+      wd = null;
+    }
+    else return;
   }
 
-  public void assertOrder(Order order, String assertPaymentState, int amountAfterRefund, String[] namesOfOrderStatusParameters, String[] namesOfPaymentAmountInfo) throws Exception {
-    String orderStatusUrlRequest = getOrderStatusRequestUrl(order);
-    String orderStatusResponse = sendRequest(orderStatusUrlRequest);
-    String[] valuesOfOrderStatusParameters = getParametersFromResponse(orderStatusResponse, namesOfOrderStatusParameters);
-    String[] valuesOfPaymentAmountInfo = getParametersFromResponse(valuesOfOrderStatusParameters[4], namesOfPaymentAmountInfo);
-    assertOrderStatus(order, valuesOfOrderStatusParameters, valuesOfPaymentAmountInfo, assertPaymentState, amountAfterRefund);
-  }
 }

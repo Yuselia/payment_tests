@@ -4,8 +4,6 @@ import com.yushkova.banktest.models.Card;
 import com.yushkova.banktest.models.Order;
 import org.testng.annotations.Test;
 
-import static com.yushkova.banktest.ApplicationManager.sendRequest;
-
 public class CreateTests extends TestBase {
 
   @Test
@@ -19,7 +17,7 @@ public class CreateTests extends TestBase {
 
     //register
     String registerRequest = app.getRegisterRequestUrl(order1);
-    String registerResponse = sendRequest(registerRequest);
+    String registerResponse = app.sendRequest(registerRequest);
     String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order1.withOrderId(valuesOfRegisterParameters[0]);
 
@@ -43,7 +41,7 @@ public class CreateTests extends TestBase {
 
     //register
     String registerRequest = app.getRegisterRequestUrl(order2);
-    String registerResponse = sendRequest(registerRequest);
+    String registerResponse = app.sendRequest(registerRequest);
     String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order2.withOrderId(valuesOfRegisterParameters[0]);
 

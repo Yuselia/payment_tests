@@ -4,8 +4,6 @@ import com.yushkova.banktest.models.Card;
 import com.yushkova.banktest.models.Order;
 import org.testng.annotations.Test;
 
-import static com.yushkova.banktest.ApplicationManager.sendRequest;
-
 public class RegisterAndPaymentOnly extends TestBase {
 
   //test values for register.do
@@ -19,7 +17,7 @@ public class RegisterAndPaymentOnly extends TestBase {
   public void smoke() throws Exception {
     //register
     String registerRequest = app.getRegisterRequestUrl(order);
-    String registerResponse = sendRequest(registerRequest);
+    String registerResponse = app.sendRequest(registerRequest);
     String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order.withOrderId(valuesOfRegisterParameters[0]);
 

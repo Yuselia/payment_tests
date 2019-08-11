@@ -4,8 +4,6 @@ import com.yushkova.banktest.models.Card;
 import com.yushkova.banktest.models.Order;
 import org.testng.annotations.Test;
 
-import static com.yushkova.banktest.ApplicationManager.sendRequest;
-
 public class DeclineTests extends TestBase {
 
   @Test
@@ -20,7 +18,7 @@ public class DeclineTests extends TestBase {
 
     //register
     String registerRequest = app.getRegisterRequestUrl(order2);
-    String registerResponse = sendRequest(registerRequest);
+    String registerResponse = app.sendRequest(registerRequest);
     String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order2.withOrderId(valuesOfRegisterParameters[0]);
 
@@ -34,7 +32,7 @@ public class DeclineTests extends TestBase {
 
     //assert Order Status
     String orderStatusUrlRequest = app.getOrderStatusRequestUrl(order2);
-    String orderStatusResponse = sendRequest(orderStatusUrlRequest);
+    String orderStatusResponse = app.sendRequest(orderStatusUrlRequest);
     String[] valuesOfOrderStatusParameters = app.getParametersFromResponse(orderStatusResponse, namesOfOrderStatusParameters);
     String[] valuesOfPaymentAmountInfo = app.getParametersFromResponse(valuesOfOrderStatusParameters[4], namesOfPaymentAmountInfo);
     app.assertOrderStatus(order2, valuesOfOrderStatusParameters, valuesOfPaymentAmountInfo, "DECLINED");
@@ -52,7 +50,7 @@ public class DeclineTests extends TestBase {
 
     //register
     String registerRequest = app.getRegisterRequestUrl(order2);
-    String registerResponse = sendRequest(registerRequest);
+    String registerResponse = app.sendRequest(registerRequest);
     String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order2.withOrderId(valuesOfRegisterParameters[0]);
 
@@ -66,7 +64,7 @@ public class DeclineTests extends TestBase {
 
     //assert Order Status
     String orderStatusUrlRequest = app.getOrderStatusRequestUrl(order2);
-    String orderStatusResponse = sendRequest(orderStatusUrlRequest);
+    String orderStatusResponse = app.sendRequest(orderStatusUrlRequest);
     String[] valuesOfOrderStatusParameters = app.getParametersFromResponse(orderStatusResponse, namesOfOrderStatusParameters);
     String[] valuesOfPaymentAmountInfo = app.getParametersFromResponse(valuesOfOrderStatusParameters[4], namesOfPaymentAmountInfo);
     app.assertOrderStatus(order2, valuesOfOrderStatusParameters, valuesOfPaymentAmountInfo, "DECLINED");
@@ -81,7 +79,7 @@ public class DeclineTests extends TestBase {
 
     //register
     String registerRequest = app.getRegisterRequestUrl(order1, sessionTimeoutSecs);
-    String registerResponse = sendRequest(registerRequest);
+    String registerResponse = app.sendRequest(registerRequest);
     String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order1.withOrderId(valuesOfRegisterParameters[0]);
 
@@ -106,7 +104,7 @@ public class DeclineTests extends TestBase {
 
     //register
     String registerRequest = app.getRegisterRequestUrl(order2, sessionTimeoutSecs);
-    String registerResponse = sendRequest(registerRequest);
+    String registerResponse = app.sendRequest(registerRequest);
     String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order2.withOrderId(valuesOfRegisterParameters[0]);
 

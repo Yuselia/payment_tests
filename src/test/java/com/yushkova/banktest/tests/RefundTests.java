@@ -4,8 +4,6 @@ import com.yushkova.banktest.models.Card;
 import com.yushkova.banktest.models.Order;
 import org.testng.annotations.Test;
 
-import static com.yushkova.banktest.ApplicationManager.sendRequest;
-
 public class RefundTests extends TestBase {
 
   //test values for register.do
@@ -22,7 +20,7 @@ public class RefundTests extends TestBase {
     int countCanRefund = order.getOrderAmountInt() / amountRefund;
     //register
     String registerRequest = app.getRegisterRequestUrl(order);
-    String registerResponse = sendRequest(registerRequest);
+    String registerResponse = app.sendRequest(registerRequest);
     String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order.withOrderId(valuesOfRegisterParameters[0]);
 
@@ -38,7 +36,7 @@ public class RefundTests extends TestBase {
 
     //refund
     for (int i = 0; i < countCanRefund; i ++) {
-      String refundResponse = sendRequest(refundRequest);
+      String refundResponse = app.sendRequest(refundRequest);
       String[] valuesOfRefundParameters = app.getParametersFromResponse(refundResponse, namesOfReverseAndRefundParameters);
       app.assertRequestStatus(order, valuesOfRefundParameters);
       amountRefund = amountRefund * (i+1);
@@ -51,7 +49,7 @@ public class RefundTests extends TestBase {
   }
 
   private void tryToRefundOneMore(int amountRefund, String refundRequest) throws Exception {
-    String refundResponse = sendRequest(refundRequest);
+    String refundResponse = app.sendRequest(refundRequest);
     String[] valuesOfRefundParameters = app.getParametersFromResponse(refundResponse, namesOfReverseAndRefundParameters);
     app.assertWrongRequest(order, valuesOfRefundParameters);
 
