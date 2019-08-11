@@ -149,7 +149,7 @@ public class ApplicationManager {
         return;
       }
     }
-    if (card.getCodeFromSms() != "") {
+    if (card.getCodeFromSms() != null) {
       setConfirmationCode(card.getCodeFromSms());
     }
     if (!paymentShouldBePassed) {

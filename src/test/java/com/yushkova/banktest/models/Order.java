@@ -1,25 +1,14 @@
 package com.yushkova.banktest.models;
 
 public class Order {
-  private final String orderAmount;
-  private final int orderAmountInt;
-  private final String returnUrl;
-  private final String userName;
-  private final String password;
-  private final String orderNumber;
+  private String orderAmount;
+  private int orderAmountInt;
+  private String returnUrl;
+  private String userName;
+  private String password;
+  private String orderNumber;
   private String orderId;
-  private int amountAfterRefund;
-
-  public Order(String orderAmount, int orderAmountInt, String returnUrl, String userName, String password, String orderNumber, String orderId, int amountAfterRefund) {
-    this.orderAmount = orderAmount;
-    this.orderAmountInt = orderAmountInt;
-    this.returnUrl = returnUrl;
-    this.userName = userName;
-    this.password = password;
-    this.orderNumber = orderNumber;
-    this.orderId = orderId;
-    this.amountAfterRefund = amountAfterRefund;
-  }
+  private int amountAfterRefund = 0;
 
   public String getOrderAmount() {
     return orderAmount;
@@ -53,11 +42,43 @@ public class Order {
     return amountAfterRefund;
   }
 
-  public void setOrderId(String orderId) {
+  public Order withOrderId(String orderId) {
     this.orderId = orderId;
+    return this;
   }
 
-  public void setAmountAfterRefund(int amountAfterRefund) {
+  public Order withAmountAfterRefund(int amountAfterRefund) {
     this.amountAfterRefund = amountAfterRefund;
+    return this;
+  }
+
+  public Order withOrderAmount(String orderAmount) {
+    this.orderAmount = orderAmount;
+    return this;
+  }
+
+  public Order withOrderAmountInt(int orderAmountInt) {
+    this.orderAmountInt = orderAmountInt;
+    return this;
+  }
+
+  public Order withReturnUrl(String returnUrl) {
+    this.returnUrl = returnUrl;
+    return this;
+  }
+
+  public Order withUserName(String userName) {
+    this.userName = userName;
+    return this;
+  }
+
+  public Order withPassword(String password) {
+    this.password = password;
+    return this;
+  }
+
+  public Order withOrderNumber(String orderNumber) {
+    this.orderNumber = orderNumber;
+    return this;
   }
 }

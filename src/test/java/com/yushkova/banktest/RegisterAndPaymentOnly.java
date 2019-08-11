@@ -9,9 +9,9 @@ import static com.yushkova.banktest.ApplicationManager.sendRequest;
 public class RegisterAndPaymentOnly extends TestBase {
 
   //test values for register.do
-  Order order = new Order("022018", Integer.parseInt("022018"), "https://ya.ru/", "task-yushkova-api", "020819", "7623574274527", "", 0);
+  Order order = new Order().withOrderAmount("022018").withOrderAmountInt(Integer.parseInt("022018")).withReturnUrl("https://ya.ru/").withUserName("task-yushkova-api").withPassword("020819").withOrderNumber("7623574274527");
   //there are correct card values
-  Card card = new Card("4111 1111 1111 1111", "2019", "Декабрь", "Test", "123", "12345678");
+  Card card = new Card().withCardNumber("4111 1111 1111 1111").withExtYear("2019").withExpMonth("Декабрь").withOwner("Test").withCvv2("123").withCodeFromSms("12345678");
   String email = "test@test.ru";
   String phone = "9270130570";
 
@@ -21,7 +21,7 @@ public class RegisterAndPaymentOnly extends TestBase {
     String registerRequest = app.getRegisterRequestUrl(order);
     String registerResponse = sendRequest(registerRequest);
     String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, app.namesOfRegisterParameters);
-    order.setOrderId(valuesOfRegisterParameters[0]);
+    order.withOrderId(valuesOfRegisterParameters[0]);
 
     //payment
     String paymentUrl = app.getPaymentUrl(valuesOfRegisterParameters);
