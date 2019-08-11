@@ -16,13 +16,13 @@ public class CreateTests extends TestBase {
     String phone = "9270130570";
 
     //register
-    String registerRequest = app.getRegisterRequestUrl(order1);
+    String registerRequest = app.getGetURLHelper().getRegisterRequestUrl(order1);
     String registerResponse = app.sendRequest(registerRequest);
     String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order1.withOrderId(valuesOfRegisterParameters[0]);
 
     //payment
-    String paymentUrl = app.getPaymentUrl(valuesOfRegisterParameters);
+    String paymentUrl = app.getGetURLHelper().getPaymentUrl(valuesOfRegisterParameters);
     app.openPaymentPage(paymentUrl);
     app.stop();
 
@@ -40,13 +40,13 @@ public class CreateTests extends TestBase {
     String phone = "9270130570";
 
     //register
-    String registerRequest = app.getRegisterRequestUrl(order2);
+    String registerRequest = app.getGetURLHelper().getRegisterRequestUrl(order2);
     String registerResponse = app.sendRequest(registerRequest);
     String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order2.withOrderId(valuesOfRegisterParameters[0]);
 
     //payment
-    String paymentUrl = app.getPaymentUrl(valuesOfRegisterParameters);
+    String paymentUrl = app.getGetURLHelper().getPaymentUrl(valuesOfRegisterParameters);
     app.payment(paymentUrl, card2, email, phone, order2);
 
     //assert Order Status

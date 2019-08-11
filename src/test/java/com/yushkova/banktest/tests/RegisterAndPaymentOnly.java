@@ -16,13 +16,13 @@ public class RegisterAndPaymentOnly extends TestBase {
   @Test
   public void smoke() throws Exception {
     //register
-    String registerRequest = app.getRegisterRequestUrl(order);
+    String registerRequest = app.getGetURLHelper().getRegisterRequestUrl(order);
     String registerResponse = app.sendRequest(registerRequest);
     String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order.withOrderId(valuesOfRegisterParameters[0]);
 
     //payment
-    String paymentUrl = app.getPaymentUrl(valuesOfRegisterParameters);
+    String paymentUrl = app.getGetURLHelper().getPaymentUrl(valuesOfRegisterParameters);
     app.payment(paymentUrl, card, email, phone, order);
     app.afterClickPaymentButton(order, card, true);
     app.waitReturnUrl(order);

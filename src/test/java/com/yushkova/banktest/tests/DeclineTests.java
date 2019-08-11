@@ -17,13 +17,13 @@ public class DeclineTests extends TestBase {
     String phone = "9270130570";
 
     //register
-    String registerRequest = app.getRegisterRequestUrl(order2);
+    String registerRequest = app.getGetURLHelper().getRegisterRequestUrl(order2);
     String registerResponse = app.sendRequest(registerRequest);
     String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order2.withOrderId(valuesOfRegisterParameters[0]);
 
     //payment
-    String paymentUrl = app.getPaymentUrl(valuesOfRegisterParameters);
+    String paymentUrl = app.getGetURLHelper().getPaymentUrl(valuesOfRegisterParameters);
     while (tryCount != 0) {
       app.payment(paymentUrl, card2, email, phone, order2);
       app.afterClickPaymentButton(order2, card2, false);
@@ -31,7 +31,7 @@ public class DeclineTests extends TestBase {
     }
 
     //assert Order Status
-    String orderStatusUrlRequest = app.getOrderStatusRequestUrl(order2);
+    String orderStatusUrlRequest = app.getGetURLHelper().getOrderStatusRequestUrl(order2);
     String orderStatusResponse = app.sendRequest(orderStatusUrlRequest);
     String[] valuesOfOrderStatusParameters = app.getParametersFromResponse(orderStatusResponse, namesOfOrderStatusParameters);
     String[] valuesOfPaymentAmountInfo = app.getParametersFromResponse(valuesOfOrderStatusParameters[4], namesOfPaymentAmountInfo);
@@ -49,13 +49,13 @@ public class DeclineTests extends TestBase {
     String phone = "9270130570";
 
     //register
-    String registerRequest = app.getRegisterRequestUrl(order2);
+    String registerRequest = app.getGetURLHelper().getRegisterRequestUrl(order2);
     String registerResponse = app.sendRequest(registerRequest);
     String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order2.withOrderId(valuesOfRegisterParameters[0]);
 
     //payment
-    String paymentUrl = app.getPaymentUrl(valuesOfRegisterParameters);
+    String paymentUrl = app.getGetURLHelper().getPaymentUrl(valuesOfRegisterParameters);
     while (tryCount != 0) {
       app.payment(paymentUrl, card2, email, phone, order2);
       app.afterClickPaymentButton(order2, card2, false);
@@ -63,7 +63,7 @@ public class DeclineTests extends TestBase {
     }
 
     //assert Order Status
-    String orderStatusUrlRequest = app.getOrderStatusRequestUrl(order2);
+    String orderStatusUrlRequest = app.getGetURLHelper().getOrderStatusRequestUrl(order2);
     String orderStatusResponse = app.sendRequest(orderStatusUrlRequest);
     String[] valuesOfOrderStatusParameters = app.getParametersFromResponse(orderStatusResponse, namesOfOrderStatusParameters);
     String[] valuesOfPaymentAmountInfo = app.getParametersFromResponse(valuesOfOrderStatusParameters[4], namesOfPaymentAmountInfo);
@@ -78,13 +78,13 @@ public class DeclineTests extends TestBase {
     //test values for payment
 
     //register
-    String registerRequest = app.getRegisterRequestUrl(order1, sessionTimeoutSecs);
+    String registerRequest = app.getGetURLHelper().getRegisterRequestUrl(order1, sessionTimeoutSecs);
     String registerResponse = app.sendRequest(registerRequest);
     String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order1.withOrderId(valuesOfRegisterParameters[0]);
 
     //payment
-    String paymentUrl = app.getPaymentUrl(valuesOfRegisterParameters);
+    String paymentUrl = app.getGetURLHelper().getPaymentUrl(valuesOfRegisterParameters);
     app.openPaymentPage(paymentUrl);
     app.waitReturnUrl(order1);
 
@@ -103,13 +103,13 @@ public class DeclineTests extends TestBase {
     String phone = "9270130570";
 
     //register
-    String registerRequest = app.getRegisterRequestUrl(order2, sessionTimeoutSecs);
+    String registerRequest = app.getGetURLHelper().getRegisterRequestUrl(order2, sessionTimeoutSecs);
     String registerResponse = app.sendRequest(registerRequest);
     String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order2.withOrderId(valuesOfRegisterParameters[0]);
 
     //payment
-    String paymentUrl = app.getPaymentUrl(valuesOfRegisterParameters);
+    String paymentUrl = app.getGetURLHelper().getPaymentUrl(valuesOfRegisterParameters);
     app.payment(paymentUrl, card2, email, phone, order2);
     app.afterClickPaymentButton(order2, card2, false);
     app.waitReturnUrl(order2);

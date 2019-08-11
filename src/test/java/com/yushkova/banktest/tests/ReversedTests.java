@@ -16,13 +16,13 @@ public class ReversedTests extends TestBase {
   @Test
   public void reverseTest() throws Exception {
     //register
-    String registerRequest = app.getRegisterRequestUrl(order);
+    String registerRequest = app.getGetURLHelper().getRegisterRequestUrl(order);
     String registerResponse = app.sendRequest(registerRequest);
     String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order.withOrderId(valuesOfRegisterParameters[0]);
 
     //payment
-    String paymentUrl = app.getPaymentUrl(valuesOfRegisterParameters);
+    String paymentUrl = app.getGetURLHelper().getPaymentUrl(valuesOfRegisterParameters);
     app.payment(paymentUrl, card, email, phone, order);
     app.afterClickPaymentButton(order, card, true);
     app.waitReturnUrl(order);
@@ -31,7 +31,7 @@ public class ReversedTests extends TestBase {
     app.assertOrder(order, "DEPOSITED", namesOfOrderStatusParameters, namesOfPaymentAmountInfo);
 
     //reverse
-    String reverseRequest = app.getReverseUrl(order);
+    String reverseRequest = app.getGetURLHelper().getReverseUrl(order);
     String reverseResponse = app.sendRequest(reverseRequest);
     String[] valuesOfReverseParameters = app.getParametersFromResponse(reverseResponse, namesOfReverseAndRefundParameters);
     app.assertRequestStatus(order, valuesOfReverseParameters);

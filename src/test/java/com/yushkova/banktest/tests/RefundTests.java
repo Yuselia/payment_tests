@@ -19,20 +19,20 @@ public class RefundTests extends TestBase {
     int amountRefund = Integer.parseInt(amountRefundString);
     int countCanRefund = order.getOrderAmountInt() / amountRefund;
     //register
-    String registerRequest = app.getRegisterRequestUrl(order);
+    String registerRequest = app.getGetURLHelper().getRegisterRequestUrl(order);
     String registerResponse = app.sendRequest(registerRequest);
     String[] valuesOfRegisterParameters = app.getParametersFromResponse(registerResponse, namesOfRegisterParameters);
     order.withOrderId(valuesOfRegisterParameters[0]);
 
     //payment
-    String paymentUrl = app.getPaymentUrl(valuesOfRegisterParameters);
+    String paymentUrl = app.getGetURLHelper().getPaymentUrl(valuesOfRegisterParameters);
     app.payment(paymentUrl, card, email, phone, order);
     app.afterClickPaymentButton(order, card, true);
     app.waitReturnUrl(order);
 
     //assert Order Status
     app.assertOrder(order, "DEPOSITED", namesOfOrderStatusParameters, namesOfPaymentAmountInfo);
-    String refundRequest = app.getRefundUrl(order, amountRefundString);
+    String refundRequest = app.getGetURLHelper().getRefundUrl(order, amountRefundString);
 
     //refund
     for (int i = 0; i < countCanRefund; i ++) {
