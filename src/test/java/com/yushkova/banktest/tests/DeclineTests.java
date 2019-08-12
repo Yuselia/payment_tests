@@ -10,7 +10,8 @@ public class DeclineTests extends TestBase {
   public void declineBankAuthorization() throws Exception {
     int tryCount = 3;
     //test values for register.do
-    Order order2 = new Order().withOrderAmount("022018").withOrderAmountInt(Integer.parseInt("022018")).withReturnUrl("https://ya.ru/").withUserName("task-yushkova-api").withPassword("020819").withOrderNumber("7623574274527");
+    Order order2 = new Order().withOrderAmount("022018").withReturnUrl("https://ya.ru/").withUserName("task-yushkova-api").withPassword("020819").withOrderNumber("7623574274527");
+    order2.withOrderAmountInt(Integer.parseInt(order2.getOrderAmount()));
     //Here should be wrong code from sms
     Card card2 = new Card().withCardNumber("4111 1111 1111 1111").withExtYear("2019").withExpMonth("Декабрь").withOwner("Test").withCvv2("123").withCodeFromSms("1456");
     String email = "test@test.ru";
@@ -24,8 +25,9 @@ public class DeclineTests extends TestBase {
 
     //payment
     String paymentUrl = app.getGetURLHelper().getPaymentUrl(valuesOfRegisterParameters);
+    app.openPaymentPage(paymentUrl);
     while (tryCount != 0) {
-      app.payment(paymentUrl, card2, email, phone, order2);
+      app.payment(card2, email, phone, order2);
       app.afterClickPaymentButton(order2, card2, false);
       tryCount --;
     }
@@ -42,7 +44,8 @@ public class DeclineTests extends TestBase {
   public void tryThreeTimes() throws Exception {
     int tryCount = 3;
     //test values for register.do
-    Order order2 = new Order().withOrderAmount("022018").withOrderAmountInt(Integer.parseInt("022018")).withReturnUrl("https://ya.ru/").withUserName("task-yushkova-api").withPassword("020819").withOrderNumber("7623574274527");
+    Order order2 = new Order().withOrderAmount("022018").withReturnUrl("https://ya.ru/").withUserName("task-yushkova-api").withPassword("020819").withOrderNumber("7623574274527");
+    order2.withOrderAmountInt(Integer.parseInt(order2.getOrderAmount()));
     //Here should be wrong code from sms
     Card card2 = new Card().withCardNumber("4111 1111 1111 1111").withExtYear("2019").withExpMonth("Декабрь").withOwner("Test").withCvv2("124").withCodeFromSms("12345678");
     String email = "test@test.ru";
@@ -57,7 +60,8 @@ public class DeclineTests extends TestBase {
     //payment
     String paymentUrl = app.getGetURLHelper().getPaymentUrl(valuesOfRegisterParameters);
     while (tryCount != 0) {
-      app.payment(paymentUrl, card2, email, phone, order2);
+      app.openPaymentPage(paymentUrl);
+      app.payment(card2, email, phone, order2);
       app.afterClickPaymentButton(order2, card2, false);
       tryCount --;
     }
@@ -74,8 +78,8 @@ public class DeclineTests extends TestBase {
   public void declineTimeOutAfterOpenedPage() throws Exception {
     int sessionTimeoutSecs = 30;
     //test values for register.do
-    Order order1 = new Order().withOrderAmount("022018").withOrderAmountInt(Integer.parseInt("022018")).withReturnUrl("https://ya.ru/").withUserName("task-yushkova-api").withPassword("020819").withOrderNumber("7623574274527");
-    //test values for payment
+    Order order1 = new Order().withOrderAmount("022018").withReturnUrl("https://ya.ru/").withUserName("task-yushkova-api").withPassword("020819").withOrderNumber("7623574274527");
+    order1.withOrderAmountInt(Integer.parseInt(order1.getOrderAmount()));
 
     //register
     String registerRequest = app.getGetURLHelper().getRegisterRequestUrl(order1, sessionTimeoutSecs);
@@ -96,7 +100,8 @@ public class DeclineTests extends TestBase {
   public void declineAfterOneTryAndTimeOut() throws Exception {
     int sessionTimeoutSecs = 30;
     //test values for register.do
-    Order order2 = new Order().withOrderAmount("022018").withOrderAmountInt(Integer.parseInt("022018")).withReturnUrl("https://ya.ru/").withUserName("task-yushkova-api").withPassword("020819").withOrderNumber("7623574274527");
+    Order order2 = new Order().withOrderAmount("022018").withReturnUrl("https://ya.ru/").withUserName("task-yushkova-api").withPassword("020819").withOrderNumber("7623574274527");
+    order2.withOrderAmountInt(Integer.parseInt(order2.getOrderAmount()));
     //Here should be not valid values of card
     Card card2 = new Card().withCardNumber("4111 1111 1111 1111").withExtYear("2019").withExpMonth("Декабрь").withOwner("Test").withCvv2("124").withCodeFromSms("12345678");
     String email = "test@test.ru";
@@ -110,7 +115,8 @@ public class DeclineTests extends TestBase {
 
     //payment
     String paymentUrl = app.getGetURLHelper().getPaymentUrl(valuesOfRegisterParameters);
-    app.payment(paymentUrl, card2, email, phone, order2);
+    app.openPaymentPage(paymentUrl);
+    app.payment(card2, email, phone, order2);
     app.afterClickPaymentButton(order2, card2, false);
     app.waitReturnUrl(order2);
 

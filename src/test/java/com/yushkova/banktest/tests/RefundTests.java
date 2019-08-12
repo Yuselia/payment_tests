@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 public class RefundTests extends TestBase {
 
   //test values for register.do
-  Order order = new Order().withOrderAmount("022018").withOrderAmountInt(Integer.parseInt("022018")).withReturnUrl("https://ya.ru/").withUserName("task-yushkova-api").withPassword("020819").withOrderNumber("7623574274527");
+  Order order = new Order().withOrderAmount("022018").withReturnUrl("https://ya.ru/").withUserName("task-yushkova-api").withPassword("020819").withOrderNumber("7623574274527");
   //there are correct card values
   Card card = new Card().withCardNumber("5555 5555 5555 5599").withExtYear("2019").withExpMonth("Декабрь").withOwner("Test").withCvv2("123");
   String email = "";
@@ -16,6 +16,7 @@ public class RefundTests extends TestBase {
 
   @Test
   public void refundTest() throws Exception {
+    order.withOrderAmountInt(Integer.parseInt(order.getOrderAmount()));
     int amountRefund = Integer.parseInt(amountRefundString);
     int countCanRefund = order.getOrderAmountInt() / amountRefund;
     //register
@@ -26,7 +27,8 @@ public class RefundTests extends TestBase {
 
     //payment
     String paymentUrl = app.getGetURLHelper().getPaymentUrl(valuesOfRegisterParameters);
-    app.payment(paymentUrl, card, email, phone, order);
+    app.openPaymentPage(paymentUrl);
+    app.payment(card, email, phone, order);
     app.afterClickPaymentButton(order, card, true);
     app.waitReturnUrl(order);
 

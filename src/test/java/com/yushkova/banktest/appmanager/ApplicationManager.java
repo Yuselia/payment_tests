@@ -24,8 +24,7 @@ public class ApplicationManager {
     wait.until(titleIs("Альфа-Банк"));
   }
 
-  public void payment(String paymentURL, Card card, String email, String phone, Order order) {
-    openPaymentPage(paymentURL);
+  public void payment(Card card, String email, String phone, Order order) {
     wait.until(presenceOfElementLocated(By.id("pan_visible")));
     type(By.id("pan_visible"), card.getCardNumber());
     wd.findElement(By.id("month-button")).click();
@@ -43,12 +42,6 @@ public class ApplicationManager {
     wd.findElement(By.id("buttonPayment")).click();
   }
 
-  private void setConfirmationCode(String code) {
-    wait.until(titleIs("Payment confirmation"));
-    type(By.name("password"), code);
-    wd.findElement(By.cssSelector("[type=submit]")).click();
-  }
-
   public void afterClickPaymentButton(Order order, Card card, boolean paymentShouldBePassed) {
     if (!paymentShouldBePassed) {
       if ((isElementPresent(wd, By.xpath("//*[text() = 'Срок действия карты указан неверно']"))) ||
@@ -59,13 +52,16 @@ public class ApplicationManager {
     if (card.getCodeFromSms() != null) {
       setConfirmationCode(card.getCodeFromSms());
     }
-    if (!paymentShouldBePassed) {
-      if (isElementPresent(
-              wd, By.xpath("//*[text() = 'Введен неправильный или просроченный код. Для получения нового кода, пожалуйста, нажмите кнопку «Отправить код еще раз».']"))) {
-        return;
-      }
-      return;
+  }
+
+  public void setConfirmationCode(String code) {
+    wait.until(titleIs("Payment confirmation"));
+    type(By.name("password"), code);
+    wd.findElement(By.cssSelector("[type=submit]")).click();
+    if(isElementPresent(wd, By.xpath("//*[contains(., 'Введен неправильный или просроченный код.')]"))) {
+      setConfirmationCode(code);
     }
+    else return;
   }
 
   public void waitReturnUrl(Order order) {
